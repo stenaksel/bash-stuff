@@ -1,13 +1,13 @@
 
 #!/bin/bash
-echo "sah: Reading ~/.bash_functions: Function definitions (read by .bashrc) "
+echo "sah: Reading ~/bash-stuff/.bash_functions: Function definitions (read by .bashrc) "
 # ----------------------
 # My functions
 # ----------------------
 
 function show_functions() {
     printf "\nshow_functions()\n----------------\n"
-    printf "a4g\t = Show all aliases for git\n"
+    printf "a4g\t = Showing all aliases for git\n"
     printf "bdd-init = Setup for running BDD ('features' + subfolder 'steps')\n"
     printf "bdd\t = Run BDD test - running tests (in features)\n"
     printf "wip\t = Run wip BDD tests\n"

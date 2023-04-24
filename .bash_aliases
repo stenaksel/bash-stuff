@@ -1,6 +1,6 @@
 
 #!/bin/bash
-echo "sah: Reading ~/.bash_aliases: Alias definitions (read by .bashrc) "
+echo "sah: Reading ~/bash-stuff/.bash_aliases: Alias definitions (read by .bashrc) "
 # ----------------------
 # My aliases
 # ----------------------
