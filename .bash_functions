@@ -91,30 +91,6 @@ function prj-info() {
     local _prj='-?-'
     _prj=$(detect_language)
     echo "Found language is probably: $_prj" 
-
-    case $_prj in
-        Python)
-            printf "We are in a Python project! \nWill try to run Behave:\n"
-            ;;
-        JavaScript)
-            printf "We are in a JavaScript project!\nWill try to run Cucumber-JS:\n"
-            ;;
-        TypeScript)
-            printf "We are in a TypeScript project!\nWill try to run Cucumber-JS:\n"
-            ;;
-    esac
-
-    # if [ -f "package.json" ]; then
-    #     printf "You are in a TypeScript project.\n(Found 'package.json')"
-    # elif [ -f "requirements-test.txt" ] || [ -f "requirements.txt" ]; then
-    #     printf "You are in a Python project \n(Found requirements.txt )"
-    #     alias bdd-py
-    #     bdd-py_ && bdd-py
-    # else 
-    #     printf "Sorry! Unable to find context!\n"
-    #     printf "To start coding for JavaScript/TypeScript use 'npm init'"
-    # fi
-
 }
 
 function bdd() {
@@ -153,8 +129,8 @@ function bdd() {
 function wip() {
     local _lang='-?-'
     _lang=$(detect_language)
-    echo "Found language: $_lang"
-    # 
+    echo "Reporting found language: $_lang"
+    
     if [ ! -d "features" ]; then
         printf "FYI: wip skipped, missing \"features\" folder! Run bdd-init first!"
     fi
@@ -165,7 +141,6 @@ function wip() {
             printf "We are in a Python project! \nWill try to run Behave:\n\n"
             alias wip-py
             wip-py
-            # alias wip-py='behave --tags=wip --tags=-skip --format behave_plain_color_formatter:PlainColorFormatter'
             ;;
         JavaScript)
             ;&
@@ -173,7 +148,6 @@ function wip() {
             printf "We are in a $_lang project!\nWill try to run Cucumber-JS:\n\n"
             alias wip-n
             wip-n
-            # alias wip-n='npm run wip'
             ;;
         *)
             printf "Unknown context: $_lang \n\n"
