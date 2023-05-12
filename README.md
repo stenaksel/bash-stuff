@@ -2,16 +2,15 @@
 
 After working with bash for many years you get used to having aliases for different development stuff available.
 
+  `a4g` shows you all git aliases.
+
 ## A nice git flow:
 
 When you have checked out a git repo and want to make some changes you can quickly come up to speed when using these aliases/functions:
 
-`git branch staging` - creates branch `staging`
-`gcos` - switches to the `staging` branch
-('`gco -`' - switches always back to previous branch)
-`gcos` - switches to the `staging` branch
-
-`a4g` shows you all git aliases.
+  `gcob staging` - creates branch `staging` and switches to it\
+  ('`gco -`' - switches always back to previous branch)\
+  `gcos` - switches to the `staging` branch\
 
 ## Starting with BDD
 
