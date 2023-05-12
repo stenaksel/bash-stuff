@@ -95,4 +95,6 @@ alias gstd='run "git stash drop"'
 alias gstl='run "git stash list"'
 alias gstp='run "git stash pop"'
 alias gsts='run "git stash save"'
+# My own (aliases not based on Oh My Zsh Git plugin)
+alias gnew='git log $1@{1}..$1@{0} "$@"'
 alias gv='run "git --version"'
