@@ -1,6 +1,6 @@
 
 #!/bin/bash
-echo "sah: Reading ~/bash-stuff/.bash_aliases: Alias definitions (read by .bashrc) "
+echo "Reading ~/bash-stuff/.bash_aliases: Alias definitions (read by .bashrc) "
 # ----------------------
 # My aliases
 # ----------------------
@@ -61,7 +61,7 @@ alias _='venvs && os_ && py_ && bdd-py_ && printf "\n"'
 ## Git aliases for bash (based on Oh My Zsh Git plugin)
 #source ~/.git-plugin-bash.sh
 
-echo "sah: Adding zsh git aliases "
+echo "Adding zsh git aliases "
 alias ga='run "git add"'
 alias gaa='run "git add ."'
 alias gaaa='run "git add --all"'
