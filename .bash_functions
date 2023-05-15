@@ -65,6 +65,7 @@ function iop() {
 
 function a4g() {
     printf "\na4g  =  alias for git\n---------------------\n"
+    # alias | grep git
     alias | grep git | awk -F'=' '{gsub(/^alias /, "", $1); printf "%-5s: %-20s\n", $1, $2}'
 }
 
@@ -72,7 +73,7 @@ function run() {
     local _cmd=$@
     # printf "\nrun('$_cmd')\n---------------------\n"
     if [ ${#_cmd} -ge 1 ]; then
-        printf "\n> $_cmd\n"
+        printf "\n=> $_cmd\n"
         # echo "--> $_cmd"
         shift
         $_cmd
