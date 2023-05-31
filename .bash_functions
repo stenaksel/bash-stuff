@@ -86,10 +86,20 @@ function a4g() {
 }
 
 function run() {
+<<<<<<< HEAD
     if [ -n "$*" ]; then
         echo '=>' "$@"
         "$@"
         # echo ' '
+=======
+    local _cmd=$@
+    # printf "\nrun('$_cmd')\n---------------------\n"
+    if [ ${#_cmd} -ge 1 ]; then
+        printf "\n=> $_cmd\n"
+        # echo "--> $_cmd"
+        shift
+        $_cmd
+>>>>>>> 5258123a7e23e4078275ab78d304a1d2014ff5fa
     else
         echo "no param for run command!"
     fi
