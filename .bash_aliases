@@ -38,8 +38,9 @@ alias bdd-n='npm run test:parallel'
 alias bdd-n_='npm --version && printf "\n"'
 ## ncu = npm-check-updates
 # __Python_block__
-alias pyi='run pip install -U -r requirements-test.txt'
-alias pi='pyi'
+alias pyirt='run pip install -U -r requirements-test.txt'
+alias pyir='run pip install -U -r requirements.txt'
+alias pi='py_install_requirements'
 alias wip-py='run behave --tags=wip --tags=-skip --format behave_plain_color_formatter:PlainColorFormatter'
 alias bdd-py='run behave --tags=-skip --format behave_plain_color_formatter:PlainColorFormatter'
 alias bdd-py_='run behave --version && printf "\n"'
