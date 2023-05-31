@@ -215,4 +215,14 @@ function wip() {
 }
 
 
-
+function py_install_requirements() {
+    if [ -f "requirements-test.txt" ]; then
+        alias pyirt
+        pyirt
+        elif [ -f "requirements.txt" ]; then
+        alias pyir
+        pyir
+    else
+        echo "Found no requirement file(s). Unable to load requirements"
+    fi
+}
