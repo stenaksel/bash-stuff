@@ -9,9 +9,10 @@ After working with bash for many years you get used to having aliases for differ
 When you have checked out a git repo and want to make some changes you can quickly come up to speed when using these aliases/functions:
 
   `gcob staging` (=> `git checkout -b staging`) - creates branch `staging` and switches to it\
-  ('`gco -`' - switches always back to *previous branch*)\
 
+After working in another branch
   `gcos` - switches to the `staging` branch\
+  ('`gco -`' - always switches back to your *previous branch*)
 
 ## Starting with BDD
 
