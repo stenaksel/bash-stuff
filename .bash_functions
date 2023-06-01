@@ -26,15 +26,18 @@ function detect_language() {
     local _lang='?'
     local NUM_PY=$(find -name '*.py' | wc -l)
     local NUM_TS=$(find -name '*.ts' | wc -l)
-    if [ -f "requirements*.txt" ]; then
+    local NUM_REQ=$(find -name 'requirements*.txt' | wc -l)
+    # if [[ -f "requirements.txt" ]]; then
+    if [[ NUM_REQ -ne 0 ]]; then
+        echo "Found req*"
         _lang='Python'
         elif [ -f "package.json" ]; then
         _lang='JavaScript'
-        if [NUM_TS != 0]; then
+        if [[NUM_TS -ne 0]]; then
             _lang='TypeScript'
         fi
     else
-        # printf "Sorry! Unable fo find context for \"detect_language\"!\nLooking for files...\n"
+        printf "Sorry! Unable fo find context for \"detect_language\"!\nLooking for files...\n"
         # echo "Found $NUM_PY python file(s)"
         # echo "Found $NUM_TS TypeScript file(s)"
         # find -name '*.py'
@@ -64,7 +67,7 @@ function iop() { # info-on-project (folder)
     echo "Found language now: '$_lang'"
 }
 
-function detect_bdd_tool() {
+function detect_py_bdd_tool() {
     local _tool='?'
     local NUM_LINE_PYTEST_BDD=$(grep "pytest-bdd" requirements*.txt | wc -l)
     local NUM_LINE_BEHAVE=$(grep "behave" requirements*.txt | wc -l)
@@ -94,16 +97,17 @@ function run() {
     fi
 }
 
-function finn_param() {
-    local _cmd=$@
-    if [ ${#_cmd} -ge 1 ]; then
-        echo "\n--> $_cmd"
-        printf "finn_param()\n Parameter #1 is '$1'\n"
-        printf "finn_param()\n Parameters are '$_cmd'\n"
-    else
-        echo "no params\n"
-    fi
-}
+# Example for getting params in bash:
+# function bash_param() {
+#     local _cmd=$@
+#     if [ ${#_cmd} -ge 1 ]; then
+#         echo "\n--> $_cmd"
+#         printf "bash_param()\n Parameter #1 is '$1'\n"
+#         printf "bash_param()\n Parameters are '$_cmd'\n"
+#     else
+#         echo "no params\n"
+#     fi
+# }
 
 function bdd-init() {
     printf "BDD-init\n"
@@ -122,7 +126,10 @@ function bdd-init() {
 function prj-info() {
     local _prj='-?-'
     _prj=$(detect_language)
-    echo "Found language is probably: $_prj"
+    if [[ $_prj != *"Sorry"* ]]; then
+        echo "Found language is probably: $_prj"
+    fi
+    
     
     case $_prj in
         Python)
@@ -152,29 +159,33 @@ function prj-info() {
 function bdd() {
     prj-info
     local _lang='-?-'
+    local _tool='-?-'
     _lang=$(detect_language)
     echo "Found language: $_lang"
+    _tool=$(detect_py_bdd_tool)
+    echo "Found bdd_tool: $_tool"
     
     if [ -d "features" ]; then
         printf "BDD!-130 (found a features folder)\n"
         printf "We are in a $_lang project!\n"
         case $_lang in
             Python)
-                printf "Will try to run Behave:\n\n"
+                # detect_py_bdd_tool
+                printf "Will try to run $_tool:\n\n"
                 # TODO Check if django involved? need to run "manage.py behave" (-> "manage.py ${bdd-py}")
                 alias bdd-py
                 bdd-py
             ;;
             JavaScript)
                 ;&
-                TypeScript)
+            TypeScript)
                     printf "Will try to run Cucumber-JS:\n\n"
                     alias wip-n
                     wip-n
                 ;;
-                *)
-                    printf "BDD! \t( no packages.json, no requirements*.txt file )\n"
-                    printf "Sorry! Unable to find \"bdd-context\" for $_lang!"
+            *)
+                printf "BDD! \t( no packages.json, no requirements*.txt file )\n"
+                printf "Sorry! Unable to find \"bdd-context\" for $_lang / $_tool!"
                 ;;
         esac
     else
@@ -185,37 +196,47 @@ function bdd() {
 
 
 function wip() {
+    prj-info
     local _lang='-?-'
+    local _tool='-?-'
     _lang=$(detect_language)
     echo "Found language: $_lang"
+    _tool=$(detect_py_bdd_tool)
+    echo "Found bdd_tool: $_tool"
     #
     if [ ! -d "features" ]; then
         printf "FYI: wip skipped, missing \"features\" folder! Run bdd-init first!"
+        # exit 0
     fi
-    
-    printf "FYI: skipping running prj-info()\n"
+    echo "Keep checking..."    
     case $_lang in
         Python)
-            printf "We are in a Python project! \nWill try to run Behave:\n\n"
-            alias wip-py
-            wip-py
-            # alias wip-py='behave --tags=wip --tags=-skip --format behave_plain_color_formatter:PlainColorFormatter'
-        ;;
-        JavaScript)
-            ;&
+        printf "We are in a Python project!\n"
+        case $_tool in
+            pytests-bdd)
+                printf "Will try to run Behave:\n\n"
+
+                alias wip-py
+                wip-py
+                ;;
+            JavaScript)
+                printf "We are in a JavaScript project!\n"
+                ;&
             TypeScript)
                 printf "We are in a $_lang project!\nWill try to run Cucumber-JS:\n\n"
                 alias wip-n
                 wip-n
-            ;;
+                ;;
             *)
                 printf "Unknown context: $_lang \n\n"
-            ;;
+                ;;
+        esac
     esac
 }
 
 
 function py_install_requirements() {
+    echo "py_install_requirements()"
     if [ -f "requirements-test.txt" ]; then
         alias pyirt
         pyirt
