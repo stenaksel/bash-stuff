@@ -4,7 +4,7 @@ After working with bash for many years you get used to having aliases for differ
 
   `a4g` shows you all git aliases.
 
-## A nice git flow:
+## A nice git flow
 
 When you have checked out a git repo and want to make some changes you can quickly come up to speed when using these aliases/functions:
 
@@ -12,13 +12,13 @@ When you have checked out a git repo and want to make some changes you can quick
 
 After working in another branch
   `gcos` - switches to the `staging` branch\
-  ('`gco -`' - always switches back to your *previous branch*)
+  `gco -`' - always switches back to your *previous branch*
 
 ## Starting with BDD
 
 When you add BDD to your flow these steps can be useful:\
 `bdd-init` will add things for running BDD \
-It creates '**features**' folder + it's subfolder '**steps**' and also an initial file to implement the _glue-code_ ie. step definitions). \
+It creates '**features**' folder + it's subfolder '**steps**' and also an initial file to implement the *glue-code* ie. step definitions). \
 <!-- TODO: find correct file extension context based on project-type (or param to bdd-init) \ -->
 <!-- TODO: If django involved in python project, put things under tests folder. run bbd with behave-django (manage.py behave) -->
 Default glue-code file is `steps.py`. Just rename file to `steps.ts` if you are using TypeScript.
