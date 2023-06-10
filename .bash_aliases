@@ -1,6 +1,6 @@
 
 #!/bin/bash
-echo "Reading ~/bash-stuff/.bash_aliases: Alias definitions (read by .bashrc) "
+echo "  ~/bash-stuff/.bash_aliases: Installing alias definitions (read by .bashrc) "
 # ----------------------
 # My aliases
 # ----------------------
@@ -62,22 +62,22 @@ alias _='venvs && os_ && py_ && bdd-py_ && printf "\n"'
 ## Git aliases for bash (based on Oh My Zsh Git plugin)
 #source ~/.git-plugin-bash.sh
 
-echo "Adding zsh git aliases "
+echo "                              (includin some Oh-My-Zsh Git Aliases -> use a4g to show them)"
 alias ga='run git add'
 alias gaa='run git add .'
 alias gaaa='run git add --all'
 alias gau='run git add --update'
-alias gb='run git branch -a'
+alias gb='run git branch -a'            # show branches (local and remote)
 # alias gbd='run git branch --delete'
 alias gc='run git commit'
-alias gcm='run git commit --message'
+alias gcm='run git commit --message'    # Git commit message
 alias gcf='run git commit --fixup'
-alias gco='run git checkout' # add name of branch to check out
-alias gcob='run git checkout -b' # creates a new branch and checks out the new branch
-alias gcom='run git checkout main'
-alias gcos='run git checkout staging'
-alias gcod='run git checkout develop'
-alias gd='run git diff'
+alias gco='run git checkout'            # Change to branch <name>
+alias gcob='run git checkout -b'        # Creates a new branch and checks out the new branch
+alias gcom='run git checkout main'      # Change to branch: main
+alias gcos='run git checkout staging'   # Change to branch: staging
+alias gcod='run git checkout develop'   # Change to branch: develop
+alias gd='run git diff'                 # Files differences in staging
 alias gda='run git diff HEAD'
 #alias gi='run git init'
 alias glg='run git log --graph --oneline --decorate'
@@ -97,6 +97,6 @@ alias gstd='run git stash drop'
 alias gstl='run git stash list'
 alias gstp='run git stash pop'
 alias gsts='run git stash save'
-# My own (aliases not based on Oh My Zsh Git plugin)
+# My own (git aliases not based on Oh-My-Zsh Git plugin)
 alias gnew='git log $1@{1}..$1@{0} "$@"'
 alias gv='run git --version'
