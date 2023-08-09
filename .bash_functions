@@ -1,100 +1,210 @@
-
 #!/bin/bash
-echo "Reading ~/bash-stuff/.bash_functions: Function definitions (read by .bashrc) "
+# ESC='\033'
+# FG_CYAN=36
+# CYAN="${ESC}[0;${FG_CYAN}m"
+# NC="${ESC}[0m" # No Color
+
+printf " Installing function definitions ...${CYAN}~/bash-stuff/.bash_functions${NC}\n"
+printf "  ( ${CYAN}hint${NC} -> show more info )\n"
+
 # ----------------------
 # My functions
 # ----------------------
 
-function show_functions() {
-    printf "\nshow_functions()\n----------------\n"
-    printf "a4g\t = Showing all aliases for git\n"
-    printf "bdd-init = Setup for running BDD ('features' + subfolder 'steps')\n"
-    printf "bdd\t = Run BDD test - running tests (in features)\n"
-    printf "wip\t = Run wip BDD tests\n"
+function venv() {
+    local venv=$(printenv | grep VIRTUAL_ENV)
+    if [ ! -z "$venv" ]; then
+        printf "$venv\n"
+        printf "\n==> Inside virtualenv: $VIRTUAL_ENV ... $VIRTUAL_ENV_PROMPT"
+    else
+        printf "\n==> Outside a virtualenv"
+    fi
 }
 
-# function pass_back_a_string() {
-#     local someStr='Python'
-#     # eval "$1='Python'"
-#     # eval "$1='$someStr'"
-#     eval "$1=$someStr"
-#     # eval "$1=detect_language"
-# }
+function hints() {
+    printf "\nhints()\t( <p> means param(s) )\n-------\n"
+    printf "alias-match <p>\t = \"Alias matching\" <p> ( Calls grep with param(s) )\n"
+    printf "a4 <p>\t = \"Alias for\" matching -> 'alias-match' <p>\n"
+    printf "a4g\t = Showing all git aliases -> 'a4 git'\n"
+    printf "a4g-\t = Showing all non-git aliases (-> 'a4 -git' => 'a4 --invert-match git')\n"
+    # printf "a4g-\t = --''--\n"
+    printf "bdd-init = Setup for running BDD ('features' + subfolder 'steps')\n"
+    printf "bdd\t = Run BDD test - running tests (in features)\n"
+    printf "dup\t = Run the database in docker ('docker-compose up pg')\n"
+    printf "iop\t = info-on-project (in folder)\n"
+    printf "wip\t = Run wip BDD tests\n"
+    printf "venv\t = Show info about configured virtual environment (in shell)\n"
+}
 
-function detect_language() {
+function detect-language() {
+    # Use: local _lang=$(detect-language | tail -1)
     # set -
     local _lang='?'
     local NUM_PY=$(find -name '*.py' | wc -l)
     local NUM_TS=$(find -name '*.ts' | wc -l)
-    local NUM_REQ=$(find -name 'requirements*.txt' | wc -l)
-    # if [[ -f "requirements.txt" ]]; then
-    if [[ NUM_REQ -ne 0 ]]; then
-        echo "Found req*"
+    local NUM_REQ=$(find . -maxdepth 1 -name 'requirements*.txt' | wc -l)
+    printf "1: language: $_lang\n"
+    printf "Found $NUM_REQ requirements*.txt file(s) ($NUM_PY *.py files, $NUM_TS *.ts files)\n"
+    if ((NUM_REQ > 0)); then
+        printf "Found $NUM_REQ requirements*.txt file(s) ($NUM_PY *.py files)\n"
         _lang='Python'
-        elif [ -f "package.json" ]; then
+        printf "1.1: language: $_lang\n"
+    elif [ -f "package.json" ]; then
+        printf "Found package.json file ($NUM_TS *.ts files)\n"
         _lang='JavaScript'
-        if [[NUM_TS -ne 0]]; then
+        printf "1.2: language: $_lang\n"
+        if ((NUM_TS > 0)); then
             _lang='TypeScript'
+            printf "1.3: language: $_lang\n"
         fi
     else
-        printf "Sorry! Unable fo find context for \"detect_language\"!\nLooking for files...\n"
+        printf "Sorry! Unable fo find context for \"detect-language\"!\nLooking for files...\n"
         # echo "Found $NUM_PY python file(s)"
         # echo "Found $NUM_TS TypeScript file(s)"
         # find -name '*.py'
-        if [[ $NUM_PY != 0 ]]; then
+        printf "2.1: language: $_lang\n"
+        if (($NUM_PY > 0)); then
             _lang='Python'
-            # printf"Found $NUM_PY Python files!\n"
-            elif [[ $NUM_TS != 0 ]]; then
+            printf "Found $NUM_PY Python files!\n"
+            printf "2.2: language: $_lang\n"
+        elif (($NUM_TS > 0)); then
             _lang='TypeScript'
-            # printf"Found $NUM_TS TypeScript files, BUT MISSING \"package.json\".  Run 'npm init'!\n"
+            #TODO printf"Found $NUM_TS TypeScript files, BUT MISSING \"package.json\".  Run 'npm init'!\n"
+            printf "2.3: language: $_lang\n"
         else
-            printf "Sorry! No context for \"detect_language\"!\n"
+            printf "Sorry! No context for \"detect-language\"!\n"
+            printf "2.4: language: $_lang\n"
         fi
     fi
-    
+    printf "3: language: $_lang\n"
+
     # local _outvar=$_lang
     # local _result # Use sme naming convention to avoid OUTVARs to clash
     # # ... some processing ....
     # eval $_outvar=\$_result # Instead of just =$_result
-    
+
     # eval "$1=$_lang"
-    echo $_lang
+    printf "detect-language will return $_lang\n"
+    printf "$_lang"
 }
 
 function iop() { # info-on-project (folder)
-    local _lang=''
-    _lang=$(detect_language)
-    echo "Found language now: '$_lang'"
+    printf "\niop  =  info-on-project (folder)\n------------------------\n"
+    local _lang=$(detect-language | tail -1)
+    printf " Found language: $_lang\n"
+    local _tool=$(detect-bdd-tool | tail -1)
+    printf " Found bdd_tool: $_tool\n\n"
+    # venv
 }
 
-function detect_py_bdd_tool() {
+function detect-bdd-tool() {
+    # Use: local _tool=$(detect-bdd-tool | tail -1)
     local _tool='?'
     local NUM_LINE_PYTEST_BDD=$(grep "pytest-bdd" requirements*.txt | wc -l)
     local NUM_LINE_BEHAVE=$(grep "behave" requirements*.txt | wc -l)
-    echo "Found $NUM_LINE_PYTEST_BDD line(s) with pytest-bdd"
-    echo "Found $NUM_LINE_BEHAVE line(s) with behave"
-    if [[NUM_LINE_PYTEST_BDD != 0]]; then
+    printf "Found $NUM_LINE_PYTEST_BDD line(s) with pytest-bdd\n"
+    printf "Found $NUM_LINE_BEHAVE line(s) with behave\n"
+    if ((NUM_LINE_PYTEST_BDD > 0)); then
         _tool='pytest-bdd'
-        elif [[NUM_LINE_BEHAVE != 0]]; then
+    elif [[ NUM_LINE_BEHAVE -ne 0 ]]; then
         _tool='behave'
     fi
-    echo $_tool
+    printf "$_tool"
+}
+
+function pip-info() {
+    local _options=$@ # grep option(s) to use
+    local _the_grep="grep git"
+    # printf "a4g()\n grep option(s): '$_options'\n"
+    echo 'param =>' "'$1'"
+    if (($# == 0)); then
+        echo "no dependency supplied for pip-info!"
+        local venv=$(printenv | grep VIRTUAL_ENV)
+        if [ ! -z "$venv" ]; then
+            printf "Found VIRTUAL_ENV"
+            pip install pipdeptree
+            return
+        else
+            printf "Didn't find VIRTUAL_ENV"
+        fi
+    fi
+    pip-dep-info-reverse $1
+    pip-dep-info $1
+}
+
+function py_install_requirements() {
+    echo "py_install_requirements()"
+    if [ -f "requirements-test.txt" ]; then
+        alias pyi-rt
+        pyi-rt
+    elif [ -f "requirements.txt" ]; then
+        alias pyi-r
+        pyi-r
+    else
+        echo "Found no requirement file(s). Unable to load requirements"
+    fi
+}
+
+function alias-match() {
+    local _num_params=$#
+    local _pattern="$@" # grep option(s) to use
+    local _options=""   # for building the grep option(s) to use
+    printf "alias-match: \n\tGot $_num_params param(s): ($_pattern)\n"
+    if [ $_num_params -eq 0 ]; then
+        printf "\n(No paramer(s) supplied! Needs at least a pattern to match -> Exiting function!)\n"
+        return
+    elif [[ ${_pattern:0:2} == "- " ]]; then
+        _options="--invert-match "
+        printf "=> Starts with '- ' => $_options\n"
+        _pattern="${_pattern:2}"
+        printf "=> (_pattern: '$_pattern')\n"
+    fi
+    printf "=> (_pattern: '$_pattern')\n"
+
+    printf "alias-match()\n _num_params=$_num_params (_pattern: '$_pattern') -> grep option(s): '$_options'\n"
+    printf "\nalias-match : \n-------------\n"
+    echo '1=>' "('$_options' == '$*') $1"
+    # if [ "$_options" = "" ]; then
+
+    # if (( $# > 1 ) && [ "$1" = "-" ]); then
+
+    #     _options = "--invert-match"
+    #     _the_grep="grep $_options git"
+    #     printf "\n(Option '$1' ==> '$_the_grep')\na4g $1 :  non-git aliases\n------------------------ \n"
+    # else
+    #     # _options=""
+    #     _the_grep="grep $_options git"
+    #     printf "(Unknown alias-match option: '$_options' !!! Will try it)\n"
+    # fi
+
+    printf "Will try grepping: alias | grep [$_options] [$_pattern] \n"
+    # alias | grep $_options $_pattern
+    alias | grep $_options $_pattern | awk -F'=' '{gsub(/^alias /, "", $1); printf "%-5s: %-20s\n", $1, $2}'
+}
+
+function a4() {
+    printf "\na4 => \"aliases-4\" aka \"alias-match\"\n"
+    alias-match "$@"
 }
 
 function a4g() {
-    printf "\na4g  =  alias for git\n---------------------\n"
-    # alias | grep git
-    alias | grep git | awk -F'=' '{gsub(/^alias /, "", $1); printf "%-5s: %-20s\n", $1, $2}'
+    printf "\na4g -> \"aliases-4-git\"\n----------------------\n"
+    alias-match $_options git
+}
+
+function a4g-() {
+    printf "\na4g- -> \"non-git aliases\"\n-------------------------\n"
+    printf "\na4g- => a4 - git"
+    alias-match - git
 }
 
 function run() {
     if [ -n "$*" ]; then
         echo '=>' "$@"
         "$@"
-        # echo ' '
-    else
-        echo "no param for run command!"
+        return
     fi
+    echo "no param for run command!"
 }
 
 # Example for getting params in bash:
@@ -118,132 +228,201 @@ function bdd-init() {
         mkdir features
         mkdir features/steps
         printf "\nMaking file for where to put step definitions, aka \"gluecode\": (steps.py)\n"
-        echo "from behave import *" >> features/steps/steps.py
+        echo "from behave import *" >>features/steps/steps.py
         printf "\nHappy BDD!\n\n"
     fi
 }
 
 function prj-info() {
-    local _prj='-?-'
-    _prj=$(detect_language)
-    if [[ $_prj != *"Sorry"* ]]; then
-        echo "Found language is probably: $_prj"
-    fi
-    
-    
-    case $_prj in
-        Python)
-            printf "We are in a Python project! \nWill try to run Behave:\n"
-        ;;
-        JavaScript)
-            printf "We are in a JavaScript project!\nWill try to run Cucumber-JS:\n"
-        ;;
-        TypeScript)
-            printf "We are in a TypeScript project!\nWill try to run Cucumber-JS:\n"
-        ;;
-    esac
-    
-    # if [ -f "package.json" ]; then
-    #     printf "You are in a TypeScript project.\n(Found 'package.json')"
-    # elif [ -f "requirements-test.txt" ] || [ -f "requirements.txt" ]; then
-    #     printf "You are in a Python project \n(Found requirements.txt )"
-    #     alias bdd-py
-    #     bdd-py_ && bdd-py
-    # else
-    #     printf "Sorry! Unable to find context!\n"
-    #     printf "To start coding for JavaScript/TypeScript use 'npm init'"
-    # fi
-    
-}
-
-function bdd() {
-    prj-info
     local _lang='-?-'
-    local _tool='-?-'
-    _lang=$(detect_language)
-    echo "Found language: $_lang"
-    _tool=$(detect_py_bdd_tool)
-    echo "Found bdd_tool: $_tool"
-    
-    if [ -d "features" ]; then
-        printf "BDD!-130 (found a features folder)\n"
-        printf "We are in a $_lang project!\n"
-        case $_lang in
-            Python)
-                # detect_py_bdd_tool
-                printf "Will try to run $_tool:\n\n"
-                # TODO Check if django involved? need to run "manage.py behave" (-> "manage.py ${bdd-py}")
-                alias bdd-py
-                bdd-py
-            ;;
-            JavaScript)
-                ;&
-            TypeScript)
-                    printf "Will try to run Cucumber-JS:\n\n"
-                    alias wip-n
-                    wip-n
-                ;;
-            *)
-                printf "BDD! \t( no packages.json, no requirements*.txt file )\n"
-                printf "Sorry! Unable to find \"bdd-context\" for $_lang / $_tool!"
-                ;;
-        esac
+    _lang=$(detect-language | tail -1)
+    if [[ "$_lang" != *"?"* ]]; then
+        echo "Found language is probably: $_lang"
     else
-        printf "FYI: bdd skipped, missing \"features\" folder! Run bdd-init first!"
-        # return 1
+        echo "Unable to detect language!"
     fi
 }
 
+# function bdd() {
+#     local _lang='-?-'
+#     local _tool='-?-'
+#     _lang=$(detect-language | tail -1)
+#     echo "Found language: $_lang"
+#     _tool=$(detect-bdd-tool | tail -1)
+#     echo "Found bdd_tool: $_tool"
 
-function wip() {
-    prj-info
-    local _lang='-?-'
-    local _tool='-?-'
-    _lang=$(detect_language)
-    echo "Found language: $_lang"
-    _tool=$(detect_py_bdd_tool)
-    echo "Found bdd_tool: $_tool"
-    #
-    if [ ! -d "features" ]; then
-        printf "FYI: wip skipped, missing \"features\" folder! Run bdd-init first!"
-        # exit 0
-    fi
-    echo "Keep checking..."    
-    case $_lang in
-        Python)
-        printf "We are in a Python project!\n"
-        case $_tool in
-            pytests-bdd)
-                printf "Will try to run Behave:\n\n"
+####  bdd_features_base_dir settings in toml file
+#     if [ -d "tests/features" ] && [ _tool == "pytest-bdd"]; then
+#         printf "Will try to run $_tool (-> bdd-pytest / bdd_pt):\n\n"
+#         alias bdd-pytest
+#         bdd-pytest
+#     elif [ -d "features" ]; then
+#         printf "BDD (found a features folder)\n"
+#         printf "We are in a $_lang project!\n"
+#         case $_lang in
+#             Python)
+#                 printf "Will try to run $_tool:\n\n"
+#                 # TODO Check if django involved? need to run "manage.py behave" (-> "manage.py ${bdd-py}")
+#                 case $_tool in
+#                     pytest-bdd)
+#                         alias bdd-pytest
+#                         bdd-pytest
+#                     ;;
+#                     behave)
+#                         alias bdd-behave
+#                         bdd-behave
 
-                alias wip-py
-                wip-py
-                ;;
-            JavaScript)
-                printf "We are in a JavaScript project!\n"
-                ;&
-            TypeScript)
-                printf "We are in a $_lang project!\nWill try to run Cucumber-JS:\n\n"
-                alias wip-n
-                wip-n
-                ;;
-            *)
-                printf "Unknown context: $_lang \n\n"
-                ;;
-        esac
-    esac
+#             ;;
+#             JavaScript)
+#                 ;& # falltrough
+#             TypeScript)
+#                 printf "Will try to run Cucumber-JS:\n\n"
+#                 alias wip-n
+#                 wip-n
+#             ;;
+#                 *)
+#                     printf "BDD! \t( no packages.json, no requirements*.txt file )\n"
+#                     printf "Sorry! Unable to find \"bdd-context\" for $_lang / $_tool!"
+#                 ;;
+#         esac
+#     else
+#         printf "FYI: bdd skipped, missing \"features\" folder! Run bdd-init first!"
+#         # return 1
+#     fi
+# }
+
+function run_() {
+    local _tags=''
+    local _param=''
+    local _prev=''
+    local _default='or'
+    local param_num=0
+    local num_params=$#
+    echo "Got $num_params param(s), default is '$_default'"
+    for _param in "$@"; do
+        echo ">param=$_param (_prev: $_prev)"
+        if [$_prev == ""]; then
+            echo "  '$_prev' == ''"
+            _tags="$_param"
+            _prev="$_param"
+        else
+            echo "  $_prev !== '' (:$_default:)"
+            _tags="$_tags $_default $_param"
+            echo "tags: $_tags"
+            _prev="$_param"
+        fi
+        echo "<param=$_param (_prev: $_prev)"
+
+        # #  && [[ "$_param" == "or" ] | [ "$_param" == "and" ]]; then
+        #     _tags="$_tags $_default $_param"
+        # fi
+        # if [ "$_param" == "or" ] | [ "$_param" == "and" ] ; then
+        #     _tags="$_tags $_param"
+        #     _prev=$param
+        #     echo "_tags=$_tags (_prev: $_prev)"
+        # else
+        #     _tags="$_tags or $_param"
+        #     _prev=""
+        # fi
+        # _prev=_param
+        echo "tags: $_tags"
+    done
+
+    echo "tags: $_tags"
+    _tags="--tags=not skip and ($_tags)"
+    echo "tags: $_tags"
 }
 
-
-function py_install_requirements() {
-    echo "py_install_requirements()"
+function py-install-requirements() {
+    echo "py-install-requirements()"
     if [ -f "requirements-test.txt" ]; then
         alias pyirt
         pyirt
-        elif [ -f "requirements.txt" ]; then
+    elif [ -f "requirements.txt" ]; then
         alias pyir
         pyir
     else
         echo "Found no requirement file(s). Unable to load requirements"
     fi
+}
+
+function wip() {
+    prj-info
+    local _lang='-?-'
+    local _tool='-?-'
+    local _tags='-?-'
+    _lang=$(detect-language | tail -1)
+    echo "Found language: $_lang"
+    _tool=$(detect-bdd-tool | tail -1)
+    echo "Found bdd_tool: $_tool"
+    #
+    # if [ "$1" !== "" ]; then
+    if (($# > 0)); then
+        echo "Got $# param(s)"
+        _tags="--tags="
+    fi
+    if [ "$1" != "" ]; then
+        _tags="--tags=$1"
+        printf "\nrunning wip with tag '$1':\n--------------------------\n"
+    fi
+    case $_tool in
+    behave)
+        if [ -d "features" ]; then
+            printf "Will try to run Behave (--> wip-behave / wip-b):\n\n"
+            alias wip-behave
+            wip-behave _tags
+        else
+            printf "FYI: wip skipped, missing 'features' folder! Run bdd-init first!"
+        fi
+        ;;
+    pytest-bdd)
+        if [ -d "tests/features" ]; then
+            printf "Found 'tests/features' folder.\n"
+        elif [ -d "features" ]; then
+            printf "Found 'features' folder.\n"
+        fi
+        printf "Will try to run $_tool (--> ):\n\n"
+        # alias wip-pytest # = wip-pt
+        wip-pytest
+        ;;
+    *)
+        # case $_lang in
+        # JavaScript)
+        #     ;&
+        # TypeScript)
+        #     printf "Will try to run Cucumber-JS:\n\n"
+        #     alias wip-node
+        #     wip-node
+        #     ;;
+        # *)
+        printf "$_tool for language $_lang was not handled here!\n(function needs update!)\n\n"
+        ;;
+    esac
+    echo "wip ended!"
+}
+
+function maybe-call-workon() {
+    local _lang=$(detect-language | tail -1)
+
+    # printf "\n(maybe-call-workon:)\nFound language is probably: '$_lang'\n"
+    if [[ "$_lang" != *Python* ]]; then
+        printf "\n(Unsupported language in 'maybe-call-workon'! -> Exiting function!)\n"
+        return
+    fi
+
+    if [ -e .venv ]; then
+        printf "==> maybe-call-workon found .venv folder!\n"
+        printf "==> .venv folder is NOT wanted virtual environment solution!\n"
+        printf "==> Suggestion just delete ${CYAN}.venv${NC} folder.\n"
+        printf "    Instead call ${CYAN}ave${NC} -> Activates the virtual environment (using virtualenvwrapper: workon .)\n"
+        printf "... or don't comply and activate (.venv) anyway by calling ${CYAN}avenv${NC} -> Activates the virtual environment (using .venv/Scripts/activate)\n"
+        printf "    No virtual environment have been activated! Exiting function!\n"
+        return
+    fi
+    # Put virtualenvwrapper.sh "in action"
+    printf "\n--> (No .venv folder found)\n"
+    # printf "WORKON_HOME = $WORKON_HOME"
+    # If this is not working see informative text in .bashrc
+    printf "==> workon .\n"
+    workon .
 }
