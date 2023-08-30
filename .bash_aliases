@@ -59,6 +59,8 @@ alias wip-behave='run behave --tags=wip --tags=-skip --format behave_plain_color
 alias wip-b='wip-behave'
 alias wip-pytest='run pytest -rA -m wip'
 alias wip-pt='wip-pytest'
+alias cwip='clear && wip'
+alias c\+wip='cwip'
 # __npm_block__
 alias npmi='npm install'
 alias ni='npmi'
@@ -78,8 +80,8 @@ alias pcu='printf "\"Python Check Updates\"\n> pip list --outdated\n" && pip lis
 alias pcu-up='printf "Upgrading outdated dependencies\n" && pip list --outdated | grep -v "^\-e" | cut -d = -f 1  | xargs -n1 pip install -U'
 alias pip-up='run python.exe -m pip install --upgrade pip'
 alias py-activate-venv='printf "Activating Python Virtual Environment (.venv)\n=> source .venv/Scripts/activate\n" && source .venv/Scripts/activate'
-alias py-workon-venv='printf "Activating Python Virtual Environment (.venv)\n=> source .venv/Scripts/activate\n" && source .venv/Scripts/activate'
-alias ave='workon .'         # Activates the virtual environment (using virtualenvwrapper: workon .)
+alias py-workon-venv='printf "Activating Python Virtual Environment (using virtualenvwrapper)\n=> workon .\n\n" && workon .'
+alias ave=py-workon-venv     # Activates the virtual environment (using virtualenvwrapper: workon .)
 alias avenv=py-activate-venv # Activates the virtual environment (using .venv/Scripts/activate)
 alias venvs='venv && printf "\nAvailable virtual environments in $WORKON_HOME (workon): \n\n" && run workon'
 alias _='os-ver && python --version && pip --version && pytest --version && bdd-pt_ && bdd-b_ && venvs && printf "\n"'
@@ -127,7 +129,7 @@ alias gstd='run git stash drop'
 alias gstl='run git stash list'
 alias gstp='run git stash pop'
 alias gsts='run git stash save'
-# My own (git-aliases not based on Oh-My-Zsh Git plugin)
+# My own (git-aliases not based on Oh-My-Zsh Git plugin):
 alias gca='run git commit --amend'
 alias gdfh='run git diff --summary FETCH_HEAD'
 alias gfo='run git fetch origin' # add <name> what branch to fetch (eg. git fetch origin main)

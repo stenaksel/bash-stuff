@@ -5,7 +5,7 @@
 # NC="${ESC}[0m" # No Color
 
 printf " Installing function definitions ...${CYAN}~/bash-stuff/.bash_functions${NC}\n"
-printf "  ( ${CYAN}hint${NC} -> show more info )\n"
+printf "  ( ${CYAN}hint${NC} -> show more info )\n\n"
 
 # ----------------------
 # My functions
@@ -351,7 +351,7 @@ function wip() {
     local _lang='-?-'
     local _tool='-?-'
     local _tags='-?-'
-    _lang=$(detect-language | tail -1)
+        _lang=$(detect-language | tail -1)
     echo "Found language: $_lang"
     _tool=$(detect-bdd-tool | tail -1)
     echo "Found bdd_tool: $_tool"
@@ -381,8 +381,7 @@ function wip() {
         elif [ -d "features" ]; then
             printf "Found 'features' folder.\n"
         fi
-        printf "Will try to run $_tool (--> ):\n\n"
-        # alias wip-pytest # = wip-pt
+        printf "Will try to run:\n"
         wip-pytest
         ;;
     *)
@@ -401,12 +400,23 @@ function wip() {
     echo "wip ended!"
 }
 
+function use-forward-slashes() {
+    printf "\nRunning use-forward-slashes with param\n"
+    # printf "-------------------------------------------------------------------------------------\n"
+    printf "before:'$1'\n"
+    after="${1//\\//}"  # Replace backslashes with forward slashes
+    printf "after :'${after}'\n"
+    "${after}"
+}
+
+
+
 function maybe-call-workon() {
     local _lang=$(detect-language | tail -1)
 
     # printf "\n(maybe-call-workon:)\nFound language is probably: '$_lang'\n"
     if [[ "$_lang" != *Python* ]]; then
-        printf "\n(Unsupported language in 'maybe-call-workon'! -> Exiting function!)\n"
+        # printf "\n(Unsupported language in 'maybe-call-workon'! -> Exiting function!)\n"
         return
     fi
 
@@ -420,9 +430,5 @@ function maybe-call-workon() {
         return
     fi
     # Put virtualenvwrapper.sh "in action"
-    printf "\n--> (No .venv folder found)\n"
-    # printf "WORKON_HOME = $WORKON_HOME"
-    # If this is not working see informative text in .bashrc
-    printf "==> workon .\n"
-    workon .
+    ave
 }
