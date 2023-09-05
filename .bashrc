@@ -1,6 +1,7 @@
 # .bashrc: example:
 # =================
 # ~/.bashrc: executed by bash for non-login shells.
+export HISTCONTROL=ignorespace:ignoredups
 export VENV_HOME=$HOME/AppData/Local/Programs/Python/Python311/Scripts # local machine related
 # virtualenvwrapper.sh config
 export PIP_REQUIRE_VIRTUALENV=true    # Don't allow pip installs without a virtual environment

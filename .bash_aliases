@@ -10,6 +10,13 @@ printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${N
 # ----------------------
 alias c='clear'
 alias bash_='run bash --version'
+alias hist='history'
+# alias hist_='hist'
+alias env_='while IFS="=" read -r key value; do printf "%-40s>_%s\n" "${key// /_}_" "$value" | sed "s/ /─/g" | sed "s/_/ /g"; done < <(env | sort)'
+
+
+
+
 alias hint='run hints'
 #alias code=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe'
 #alias zero=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe --disable-extensions'
