@@ -103,7 +103,7 @@ alias gaa='run git add .'
 alias gaaa='run git add --all'
 alias gau='run git add --update'
 alias gb='run git branch -a' # show branches (local and remote)
-# alias gbd='run git branch --delete' # add <name> what branch to delete
+alias gbd='run git branch --delete' # add <name> what branch to delete
 # alias gbda='git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d'
 alias gc='run git commit --verbose'
 # %ligatures off
