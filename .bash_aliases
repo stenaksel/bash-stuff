@@ -66,6 +66,7 @@ alias wip-behave='run behave --tags=wip --tags=-skip --format behave_plain_color
 alias wip-b='wip-behave'
 alias wip-pytest='run pytest -rA -m wip'
 alias wip-pt='wip-pytest'
+alias 'ok?'='run pytest -rA -m ok'
 alias cwip='clear && wip'
 alias c\+wip='cwip'
 # __npm_block__
