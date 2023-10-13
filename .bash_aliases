@@ -8,14 +8,12 @@ printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${N
 # ----------------------
 # My aliases
 # ----------------------
+alias blueall='printf "Running blue on all python files ...\n> blue **/*.py *.py\n\n" && run blue **/*.py *.py'
 alias c='clear'
 alias bash_='run bash --version'
 alias hist='history'
 # alias hist_='hist'
 alias env_='while IFS="=" read -r key value; do printf "%-40s>_%s\n" "${key// /_}_" "$value" | sed "s/ /─/g" | sed "s/_/ /g"; done < <(env | sort)'
-
-
-
 
 alias hint='run hints'
 #alias code=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe'
@@ -43,32 +41,48 @@ alias pip_='run pip --version'
 alias pip-dep-info='run pipdeptree -p '                   # add <name> of package to inform about
 alias pip-dep-info-reverse='run pipdeptree --reverse -p ' # add <name> of package to inform about
 alias pytest-ver='pytest --version && printf "\n"'
+alias pyt='run pytest -r fxs'
+alias pyt_f='printf "Run feature <filename>\n" && run pytest -r fxs --feature='
+alias pyt_s='printf "Run scenario \"scenario name\"\n" && run pytest -r fxs --feature='
+alias bddf='pyt_f' #TODO create function to find context ('pyt_f' or 'cucumber_f')
+alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
+alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
 alias pytest_='run pytest --version && printf "\n"'
 alias py_='printf "\n" && py-ver && printf "\n" && pip_ && printf "\n" && pytest_'
 ## alias mypy='venv/bin/mypy'
 alias hist='cat ~/.bash_history'
 alias rmhist='rm ~/.bash_history; history -c;'
 # ---- Coding/BDD related: ----
+alias no_tags='printf "All untagged scenarios:\n" && run find_scenarios_without_tags -'
+alias tag='find_tags'
 alias bdd-node='run npm run test:parallel'
 alias bdd-n='bdd-node'
 alias bdd-behave='run behave --tags=-skip --format behave_plain_color_formatter:PlainColorFormatter'
 alias bdd-b='bdd-behave'
 alias bdd-behave_='run behave --version && printf "\n"'
 alias bdd-b_='bdd-behave_'
-alias bdd-pytest='run pytest -r fxs'
+alias bdd-pytest='pyt'
 alias bdd-pt='bdd-pytest'
 alias bdd-pt_='bdd-pytest --version && printf "\n"'
 alias bdd-pytest-lf='run pytest -r pfexs --lf'
 #
+# alias wip-tag='printf "All wip tagged scenarios :\n" && run find_scenarios_with_tags wip'
+alias 'pt'='clear && run pytest -rA'
+alias 'bdd'='clear && run pytest -rA -m "not todo"'
+alias 'bdd-ok'='clear && run pytest -rA -m ok'
+alias 'bdd-nok'='clear && run pytest -rA -m "not ok"'
+alias 'ok'='bdd-ok'
+alias 'nok'='bdd-nok'
+alias 'ok?'='bdd-ok'
+alias 'wip?'='run wip'
+alias ok-tag='tag ok'
+alias wip-tag='tag wip'
 alias wip-node='npm run wip'
 alias wip-n='wip-node'
 alias wip-behave='run behave --tags=wip --tags=-skip --format behave_plain_color_formatter:PlainColorFormatter'
 alias wip-b='wip-behave'
 alias wip-pytest='run pytest -rA -m wip'
 alias wip-pt='wip-pytest'
-alias 'ok?'='run pytest -rA -m ok'
-alias cwip='clear && wip'
-alias c\+wip='cwip'
 # __npm_block__
 alias npmi='npm install'
 alias ni='npmi'
@@ -92,7 +106,7 @@ alias py-workon-venv='printf "Activating Python Virtual Environment (using virtu
 alias ave=py-workon-venv     # Activates the virtual environment (using virtualenvwrapper: workon .)
 alias avenv=py-activate-venv # Activates the virtual environment (using .venv/Scripts/activate)
 alias venvs='venv && printf "\nAvailable virtual environments in $WORKON_HOME (workon): \n\n" && run workon'
-alias _='os-ver && python --version && pip --version && pytest --version && bdd-pt_ && bdd-b_ && venvs && printf "\n"'
+alias _='os-ver && python --version && pip --version && pytest --version && bdd-pt_ && venvs && printf "\n"'
 
 # ----------------------
 # Git Aliases
@@ -100,7 +114,7 @@ alias _='os-ver && python --version && pip --version && pytest --version && bdd-
 ## Git aliases for bash (based on Oh My Zsh Git plugin)
 #source ~/.git-plugin-bash.sh
 alias ga='run git add'
-alias gaa='run git add .'
+alias gaa='run git add .' # Adds all files in the current directory to the index
 alias gaaa='run git add --all'
 alias gau='run git add --update'
 alias gb='run git branch -a' # show branches (local and remote)
@@ -144,4 +158,4 @@ alias gdfh='run git diff --summary FETCH_HEAD'
 alias gfo='run git fetch origin' # add <name> what branch to fetch (eg. git fetch origin main)
 alias gnew='run git log $1@{1}..$1@{0} "$@"'
 alias git_='run git --version'
-alias gv='run git --version'
+alias gv='git_'

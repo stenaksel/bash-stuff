@@ -30,10 +30,13 @@ function hints() {
     # printf "a4g-\t = --''--\n"
     printf "bdd-init = Setup for running BDD ('features' + subfolder 'steps')\n"
     printf "bdd\t = Run BDD test - running tests (in features)\n"
+    printf "no_tags\t show all untagged BDD scenarios\n"
+    printf "find_tags <p> <p> (aka just "tag") show all BDD scenarios tagged with the tag(s)\n"
     printf "dup\t = Run the database in docker ('docker-compose up pg')\n"
     printf "iop\t = info-on-project (in folder)\n"
     printf "wip\t = Run wip BDD tests\n"
     printf "venv\t = Show info about configured virtual environment (in shell)\n"
+    printf "blueall\t = Run blue formatter on all python files\n"
 }
 
 function detect-language() {
@@ -351,7 +354,8 @@ function wip() {
     local _lang='-?-'
     local _tool='-?-'
     local _tags='-?-'
-        _lang=$(detect-language | tail -1)
+    clear
+    _lang=$(detect-language | tail -1)
     echo "Found language: $_lang"
     _tool=$(detect-bdd-tool | tail -1)
     echo "Found bdd_tool: $_tool"
@@ -404,12 +408,10 @@ function use-forward-slashes() {
     printf "\nRunning use-forward-slashes with param\n"
     # printf "-------------------------------------------------------------------------------------\n"
     printf "before:'$1'\n"
-    after="${1//\\//}"  # Replace backslashes with forward slashes
+    after="${1//\\//}" # Replace backslashes with forward slashes
     printf "after :'${after}'\n"
     "${after}"
 }
-
-
 
 function maybe-call-workon() {
     local _lang=$(detect-language | tail -1)
@@ -431,4 +433,443 @@ function maybe-call-workon() {
     fi
     # Put virtualenvwrapper.sh "in action"
     ave
+}
+
+find_scenarios_without_tags() {
+    directory='.'
+    scenarios_without_tags=()
+
+    shopt -s globstar
+    for feature_file in $directory/**/*.feature; do
+        while IFS= read -r line; do
+            if [[ $line =~ ^[[:space:]]*(Scenario|Scenario Outline): && ! $prev_line =~ ^[[:space:]]*@ ]]; then
+                scenarios_without_tags+=("$feature_file¤$line")
+            fi
+            prev_line=$line
+        done <"$feature_file"
+    done
+
+    # printf "%s\n" "${scenarios_without_tags[@]}"
+    # printf "%s\n" "${scenarios_without_tags[@]}" | awk -F: '{printf "%s\t%s\n", $1, $2}' | column -t -s $'\t'
+    printf "%s\n" "${scenarios_without_tags[@]}" | awk -F'¤' '{printf "%s\t%s\n", $1, $2}' | column -t -s $'\t'
+}
+
+# Example usage
+# directory="path/to/your/directory"
+# find_scenarios_without_tags "$directory"
+
+find_scenarios_with_tag() {
+    directory='.'
+    tag=$2
+    scenarios_with_tag=()
+
+    shopt -s globstar
+    for feature_file in $directory/**/*.feature; do
+        while IFS= read -r line; do
+            echo "x $prev_line"
+            echo "> $line"
+            if [[ $line =~ ^[[:space:]]*(Scenario|Scenario Outline): ]]; then
+                prev_line=$line
+            elif [[ $line =~ ^[[:space:]]*@$tag ]]; then
+                scenarios_with_tag+=("$feature_file¤$prev_line")
+                echo " [$line]"
+            fi
+
+
+        done <"$feature_file"
+    done
+
+    printf "%s\n" "${scenarios_with_tag[@]}" | awk -F'¤' '{printf "%s\t%s\n", $1, $2}' | column -t -s $'\t'
+}
+
+xxxfind_tags() {
+    # Initialize the "found" list
+    found=()
+
+    # Search for *.feature files in the current directory and its subdirectories
+    while IFS= read -r -d '' file; do
+        echo "Searching in file: $file"
+
+        # Read each line in the file
+        while IFS= read -r line; do
+            # Check if the line contains all the tags prefixed by '@' in any order
+            if [[ $line =~ $(printf "(?=.*@%s)" "$@" | sort -u) ]]; then
+                # Add the next line to the "found" list
+                read -r next_line
+                found+=("$next_line")
+            fi
+        done <"$file"
+    done < <(find . -type f -name "*.feature" -print0)
+
+    # Print the "found" list
+    echo "Found lines:"
+    for line in "${found[@]}"; do
+        echo "$line"
+    done
+}
+
+xxfind_tags() {
+    # Initialize the "found" list
+    found=()
+
+    # Iterate over each argument passed to the function
+    for tag in "$@"; do
+        echo "Searching for tag: $tag"
+    done
+
+    # Search for *.feature files in the current directory and its subdirectories
+    while IFS= read -r -d '' file; do
+        echo "Searching in file: $file"
+
+        # Read each line in the file
+        while IFS= read -r line; do
+            # Check if the line contains all the tags prefixed by '@' in any order
+            if [[ $line == *@($(echo "$@" | tr ' ' '|'))* ]]; then
+                # Add the next line to the "found" list
+                read -r next_line
+                found+=("$next_line")
+            fi
+        done <"$file"
+    done < <(find . -type f -name "*.feature" -print0)
+
+    # Print the "found" list
+    echo "Found lines:"
+    for line in "${found[@]}"; do
+        echo "$line"
+    done
+}
+
+xfind_tags() {
+    # Initialize the "found" list
+    found=()
+
+    # Iterate over each argument passed to the function
+    for tag in "$@"; do
+        if [[ $tag == "-" ]]; then
+            echo "Searching for Scenario without tags"
+        else
+            echo "Searching for tag: $tag"
+        fi
+    done
+
+    # Search for *.feature files in the current directory
+    for file in ./**/*.feature; do
+        # for file in ./*.feature; do
+        echo "Searching in file: $file"
+
+        # Read each line in the file
+        while IFS= read -r line; do
+            # Check if the line contains all the tags prefixed by '@' in any order
+            if [[ $line == *@($(echo "$@" | tr ' ' '|'))* ]]; then
+                # Add the next line to the "found" list
+                read -r next_line
+                found+=("$next_line")
+            fi
+            prev_line=$line
+        done <"$file"
+    done
+
+    # Print the "found" list
+    echo "Found lines:"
+    for line in "${found[@]}"; do
+        echo "$line"
+    done
+}
+
+# find_scenarios_with_tags() {
+#     directory='.'
+#     tags=("$@")
+#     # tags=("wip")
+#     feature=""
+#     scenarios=()
+
+#     shopt -s globstar # allows for recursive globbing using the ** pattern
+#     if [[ -z $tags ]]; then
+#         # no params given to function
+#         printf "\nExpected param(s) to find Scenarios!\n"
+#         printf "\nParams can be one or more tags, or just '-' to find Scenarioes without tags!\n"
+#         return
+#     else
+#         printf "\e[30m params: $tags \e[0m\n"
+#         # if [[ $tags == ("-")]]; then
+#         # printf "\n'-' => find all Scenarioes without tags!\n"
+#     fi
+
+#     # Iterate over each .feature file in the specified directory and its subdirectories
+#     for feature_file in $directory/**/*.feature; do
+#         while IFS= read -r line; do
+#             printf "\e[30mLine: %s \e[0m\n" "$line"
+#             # printf "\e[31m %s \e[0m\n" "$line"
+
+#             # if [[ $line =~ ^(Feature:|\s+Scenario|\s+Scenario Outline) ]]; then
+#             if [[ $line =~ ^(Feature): ]]; then
+#                 printf "\e[30mFeature:-> \e[31m %s \e[0m \n" "$line"
+#                 feature=$line
+#             elif [[ $line =~ ^[[:space:]]*(Scenario|Scenario Outline): ]]; then
+#                 # => A scenario line
+#                 printf "Scenario line-> \e[30m %s \e[0m %s\n" "$feature" "$line"
+#                 prev_line=$line
+#             else
+#                 # => A step line ?
+#                 printf "step? \e[32m %s \e[0m\n" "$line"
+#             fi
+#             if [[ -z $tags ]]; then
+#                 # no tags given to function
+#                 # if [[ $tags == ("-") && ! $prev_line =~ ^[[:space:]]*@ ]]; then
+#                 #     # => Found no tags on the scenario, so add it
+#                 #     printf "\e[31m(adding it)\e[0m"
+#                 #     scenarios+=("$feature_file¤$prev_line")
+#                 # fi
+#             else
+#                 printf "\e[31m Not [ -z $tags ]\e[0m\n"
+#                 all_tags_found=true
+#                 for tag in "${tags[@]}"; do
+#                     if [[ ! $line =~ ^[[:space:]]*@$tag ]]; then
+#                         all_tags_found=false
+#                         break
+#                     fi
+#                 done
+#                 if $all_tags_found; then
+#                     scenarios+=("$feature_file¤$prev_line")
+#                 fi
+#             fi
+#             #
+#             prev_line=$line
+#         done <"$feature_file"
+#     done
+
+#     # echo "Found ${#scenarios[@]} scenarios" | wc -l
+#     echo "Found ${#scenarios[@]} lines"
+#     printf "%s\n" "${scenarios[@]}" | awk -F'¤' '{printf "%s\t%s\n", $1, $2}' | column -t -s $'\t'
+
+# }
+
+# TODO: Remove check_string?
+check_string() {
+    local str_par="$1" # Assign the first parameter to str_par
+    shift              # Shift the parameters to the left, excluding str_par
+    local tags=("$@")  # Store the remaining parameters in tags array
+
+    printf "Checking string: '%s' for tags: '%s'\n" "$str_par" "${tags[@]}"
+    # Add the '@' prefix to each string in tags
+    local prefixed_list=()
+    for str in "${tags[@]}"; do
+        prefixed_list+=("@$str")
+    done
+
+    # Check if all strings in prefixed_list are present in str_par
+    for str in "${prefixed_list[@]}"; do
+        if [[ ! $str_par =~ "$str" ]]; then
+            return # Exit the function if any string is not present
+        fi
+    done
+
+    # If all strings in prefixed_list are present in str_par, print str_par
+    echo "$str_par"
+}
+
+find_tags() {
+    # Initialize the "found" list
+    local found_tags=()
+    local found_lines=()
+    local found_scenarioes=()
+    local looking_for=()
+    local tags=()
+    for param in "$@"; do
+        tags+=("@$param")
+    done
+    local found_all=false
+    local line_no=0
+
+    # # Add the _@_ prefix to each string in tags
+    # local prefixed_list=()
+    # for str in "${tags[@]}"; do
+    #     prefixed_list+=("@$str")
+    # done
+
+    printf "\nLooking for tag(s): '${tags[*]}' (in all feature files)\n"
+
+    # Search for *.feature files in the current directory and its subdirectories
+    while IFS= read -r -d '' file; do
+        found_lines=()
+        # printf "Trying to find tags: \t${tags[*]}, \n\t    in file:\t$file\n\n"
+        # echo "Searching in file: $file for tags: ${tags[@]}"
+
+        # Read each line in the file
+        while IFS= read -r line; do
+            if $found_all; then # all tags found in previous line
+                # echo "Prevous line ($line_no) contained all tags! Adding this line to found_scenarioes"
+                ((line_no++))
+                found_scenarioes+=("$line_no: $line")
+            else
+                ((line_no++))
+            fi
+            found_tags=()
+            found_all=false
+
+            # Check if all strings in prefixed_list are present in line
+            looking_for=("${tags[@]}")
+            # printf "\e[30mLine %s: %s \e[0m <- trying to find: %s\n" "$line_no" "$line" "[${tags[*]}]"
+            # While looking_for is not empty
+
+            found_tags=()
+            for tag in "${tags[@]}"; do
+                # echo "  Now looking for tag: '$tag' (in [$line])"
+                if [[ ! $line =~ .*\<$tag\>.* ]]; then
+                    # code to execute if $tag is not a whole word in $line
+                    printf "$line_no  '$tag' not in [$line]\n"
+                else
+                    # code to execute if $tag is a whole word in $line
+                    printf "$line_no  '$tag' was in [$line]\n"
+                fi
+
+
+                if [[ $line =~ .*\<$tag\>.* ]]; then
+                    printf "  Found tag: '$tag' (in [$line])\n"
+                fi
+                # if [[ $line != *"$tag"* ]]; then
+                #     if [[ $line =~ .*\<$tag\>.* ]]; then
+                #         found_all=false
+                #         # No need to find any more tags
+                #         # echo "  The string '${tag}' is not in the line (breaking out of for loop)"
+                #         break
+
+                # else
+                #     looking_for=("${looking_for[@]/$tag/}")
+                #     found_tags+=("$tag")
+                # fi
+
+                # echo "  end of: for tag: '$tag'"
+            done # for tag in "${tags[@]}"; do
+            # echo "   (Finished: for tag in "${tags[@]}"; do) | still looking for: '${looking_for[*]}'"
+            if [ "${#found_tags[@]}" -eq "${#tags[@]}" ]; then
+                found_all=true
+            fi
+
+            # printf "   Found tags = ${found_tags[*]}\t|found_all = $found_all\n"
+
+            if $found_all; then
+                # found_all=true
+                # echo "found_all = $found_all ==> line: [$line]"
+                found_lines+=("$line_no: $line")
+            else
+                looking_for=("${tags[@]}")
+                for tag in "${found_tags[@]}"; do
+                    looking_for=("${looking_for[@]/$tag/}")
+                done
+                # echo "   found_all = $found_all. Still looking for: ${looking_for[*]} "
+                # echo "   Did not find all tags ==> {$tags}\n"
+            fi
+            # echo " while IFS= read -r line; do"
+        done <"$file" # while IFS= read -r line; do
+
+        # read -r next_line
+        # printf "\e[30mWill add the next line to the "found" list: %s \e[0m\n" "$next_line"
+        # found_scenarioes+=("$next_line")
+
+        # # # Break the while loop
+    done < <(find . -type f -name "*.feature" -print0) # while IFS= read -r -d '' file; do
+    # Print the "found_tags" list
+    # echo "found_lines:"
+    # for line in "${found_lines[@]}"; do
+    #     echo "$line"
+    # done
+    echo "_@____ Scenario____________________________________________________________________________"
+    for line in "${found_scenarioes[@]}"; do
+        echo "$line"
+    done
+
+}
+
+# TODO: if tags start with 'pytest.mark.' then search in py files
+find_py_tags() {
+    # Initialize the "found" list
+    local found_tags=()
+    local found_lines=()
+    local found_tests=()
+    local looking_for=()
+    local tags=()
+    for param in "$@"; do
+        tags+=("pytest.mark.$param")
+    done
+    local found_all=false
+    local line_no=0
+
+    printf "\nLooking for tag(s): '${tags[*]}' (in all python test files)\n"
+
+    # Search for *.feature files in the current directory and its subdirectories
+    while IFS= read -r -d '' file; do
+        found_lines=()
+        printf "Trying to find tags: \t${tags[*]}, \n\t    in file:\t$file\n\n"
+        # echo "Searching in file: $file for tags: ${tags[@]}"
+
+        # Read each line in the file
+        while IFS= read -r line; do
+            if $found_all; then # all tags found in previous line
+                # echo "Prevous line ($line_no) contained all tags! Adding this line to found_tests"
+                ((line_no++))
+                found_tests+=("$line_no: $line")
+            else
+                ((line_no++))
+            fi
+            found_tags=()
+            found_all=false
+
+            # Check if all strings in prefixed_list are present in line
+            looking_for=("${tags[@]}")
+            # printf "\e[30mLine %s: %s \e[0m <- trying to find: %s\n" "$line_no" "$line" "[${tags[*]}]"
+            # While looking_for is not empty
+
+            found_tags=()
+            for tag in "${tags[@]}"; do
+                # echo "  Now looking for tag: '$tag' (in [$line])"
+                if [[ $line != *"$tag"* ]]; then
+                    found_all=false
+                    # No need to find any more tags
+                    # echo "  The string '${tag}' is not in the line (breaking out of for loop)"
+                    break
+                else
+                    looking_for=("${looking_for[@]/$tag/}")
+                    found_tags+=("$tag")
+                fi
+
+                # echo "  end of: for tag: '$tag'"
+            done # for tag in "${tags[@]}"; do
+            # echo "   (Finished: for tag in "${tags[@]}"; do) | still looking for: '${looking_for[*]}'"
+            if [ "${#found_tags[@]}" -eq "${#tags[@]}" ]; then
+                found_all=true
+            fi
+
+            # printf "   Found tags = ${found_tags[*]}\t|found_all = $found_all\n"
+
+            if $found_all; then
+                # found_all=true
+                # echo "found_all = $found_all ==> line: [$line]"
+                found_lines+=("$line_no: $line")
+            else
+                looking_for=("${tags[@]}")
+                for tag in "${found_tags[@]}"; do
+                    looking_for=("${looking_for[@]/$tag/}")
+                done
+                # echo "   found_all = $found_all. Still looking for: ${looking_for[*]} "
+                # echo "   Did not find all tags ==> {$tags}\n"
+            fi
+            # echo " while IFS= read -r line; do"
+        done <"$file" # while IFS= read -r line; do
+
+        # read -r next_line
+        # printf "\e[30mWill add the next line to the "found" list: %s \e[0m\n" "$next_line"
+        # found_tests+=("$next_line")
+
+        # # # Break the while loop
+    done < <(find . -type f -name "test_before_feature_2.py" -print0) # while IFS= read -r -d '' file; do
+    # Print the "found_tags" list
+    # echo "found_lines:"
+    # for line in "${found_lines[@]}"; do
+    #     echo "$line"
+    # done
+    echo "_@____ Test____________________________________________________________________________"
+    for line in "${found_tests[@]}"; do
+        echo "$line"
+    done
 }
