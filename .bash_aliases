@@ -8,7 +8,7 @@ printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${N
 # ----------------------
 # My aliases
 # ----------------------
-alias blueall='printf "Running blue on all python files ...\n> blue **/*.py *.py\n\n" && run blue **/*.py *.py'
+alias blueall='printf "Running blue on all python files ...\n> " && find . -name "*.py" -print0 | xargs -0 blue'
 alias c='clear'
 alias bash_='run bash --version'
 alias hist='history'
