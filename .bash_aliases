@@ -9,7 +9,7 @@ printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${N
 # My aliases
 # ----------------------
 alias blueall='printf "Running blue on all python files ...\n> " && find . -name "*.py" -print0 | xargs -0 blue'
-alias blueit='printf "Running blue on all python files, EXCEPT those in migrations folder...\n> " && find . -type d -name migrations -prune -o -type f -name "*.py" -print0 | xargs -0 blue
+alias blueit='printf "Running blue on all python files, EXCEPT those in migrations folder...\n> " && find . -type d -name migrations -prune -o -type f -name "*.py" -print0 | xargs -0 blue'
 alias c='clear'
 alias bash_='run bash --version'
 alias hist='history'
@@ -19,14 +19,6 @@ alias env_='while IFS="=" read -r key value; do printf "%-40s>_%s\n" "${key// /_
 alias hint='run hints'
 #alias code=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe'
 #alias zero=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe --disable-extensions'
-# alias code=~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/223.7401.13/bin/pycharm.sh
-# alias pycharm=~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/223.7401.13/bin/pycharm.sh
-# alias fleet=~/.local/share/JetBrains/Toolbox/apps/Fleet/ch-0/1.9.237/bin/Fleet
-# ---- Linux related: ----
-#alias os-ver='lsb_release -a'
-#alias toolbox='/mnt/c/Users/StenAkselHeien/AppData/Local/JetBrains/Toolbox/bin/jetbrains-toolbox.exe'
-#alias tb='toolbox'
-## alias tb='/opt/jetbrains/jetbrains-toolbox'
 # ---- Windows related: ----
 alias exp='explorer.exe .'
 #alias edit='notepad.exe'
@@ -34,9 +26,7 @@ alias exp='explorer.exe .'
 #alias type='echo ------ Running cat for you ------ && cat'
 alias os-ver='run cmd //c ver'
 alias os_='os-ver'
-# alias os-ver='cmd /k ver && exit'
 # ---- Python related: ----
-# alias py-ver='python --version && pip --version && pytest --version'
 alias py-ver='run python --version && printf "@: " && which python'
 alias pip_='run pip --version'
 alias pip-dep-info='run pipdeptree -p '                   # add <name> of package to inform about
@@ -50,7 +40,6 @@ alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --sc
 alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
 alias pytest_='run pytest --version && printf "\n"'
 alias py_='printf "\n" && py-ver && printf "\n" && pip_ && printf "\n" && pytest_'
-## alias mypy='venv/bin/mypy'
 alias hist='cat ~/.bash_history'
 alias rmhist='rm ~/.bash_history; history -c;'
 # ---- Coding/BDD related: ----
