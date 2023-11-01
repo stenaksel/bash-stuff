@@ -30,13 +30,15 @@ function hints() {
     # printf "a4g-\t = --''--\n"
     printf "bdd-init = Setup for running BDD ('features' + subfolder 'steps')\n"
     printf "bdd\t = Run BDD test - running tests (in features)\n"
-    printf "no_tags\t show all untagged BDD scenarios\n"
+    printf "no_tags = \t show all untagged BDD scenarios\n"
     printf "find_tags <p> <p> (aka just "tag") show all BDD scenarios tagged with the tag(s)\n"
     printf "dup\t = Run the database in docker ('docker-compose up pg')\n"
     printf "iop\t = info-on-project (in folder)\n"
     printf "wip\t = Run wip BDD tests\n"
     printf "venv\t = Show info about configured virtual environment (in shell)\n"
-    printf "blueall\t = Run blue formatter on all python files\n"
+    printf "blue?\t = Check if some python files needs Blue formatting\n"
+    printf "blueit\t = Run Blue formatter on all python files, EXCEPT those in migrations folder\n"
+    printf "blueall\t = Run Blue formatter on all python files\n"
 }
 
 function detect-language() {

@@ -8,6 +8,8 @@ printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${N
 # ----------------------
 # My aliases
 # ----------------------
+alias 'blue?'='run blue --check SRC'
+alias blue_='run blue --version'
 alias blueall='printf "Running blue on all python files ...\n> " && find . -name "*.py" -print0 | xargs -0 blue'
 alias blueit='printf "Running blue on all python files, EXCEPT those in migrations folder...\n> " && find . -type d -name migrations -prune -o -type f -name "*.py" -print0 | xargs -0 blue'
 alias c='clear'
