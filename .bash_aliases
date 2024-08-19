@@ -4,7 +4,7 @@ FG_CYAN=36
 CYAN="${ESC}[0;${FG_CYAN}m"
 NC="${ESC}[0m" # No Color
 printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${NC}\n"
-
+#TODO: Split file, use includes... create one file for each language (& OS?)
 # ----------------------
 # My aliases
 # ----------------------
@@ -75,6 +75,7 @@ alias wip-behave='run behave --tags=wip --tags=-skip --format behave_plain_color
 alias wip-b='wip-behave'
 alias wip-pytest='run pytest -rA -m wip'
 alias wip-pt='wip-pytest'
+alias cwip='clear && wip'
 # __npm_block__
 alias npmi='npm install'
 alias ni='npmi'

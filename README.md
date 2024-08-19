@@ -1,6 +1,7 @@
 # Useful bash aliases & functions (from "bash_stuff")
 
 After working with bash for many years you get used to having aliases for different development stuff available.
+
   | Command     | Aka   | Description |
   | -------     | ---   | ----------- |
   | `hint`      | hints | shows hints for available commands (in "bash-stuff") |
