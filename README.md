@@ -1,6 +1,7 @@
 # Useful bash aliases & functions (from "bash_stuff")
 
 After working with bash for many years you get used to having aliases for different development stuff available.
+
   | Command     | Aka   | Description |
   | -------     | ---   | ----------- |
   | `hint`      | hints | shows hints for available commands (in "bash-stuff") |
@@ -37,11 +38,12 @@ After working with bash for many years you get used to having aliases for differ
 
 When you have checked out a git repo and want to make some changes you can quickly come up to speed when using these aliases/functions:
 
-  `gcob staging` (=> `git checkout -b staging`) - creates branch `staging` and switches to it\
+  `gcob staging` (=> `git checkout -b staging`) - creates branch `staging` and switches to it.
 
 Hint:
   Don't reuse a already used `staging` branch.
   Delete it (or rename to keep) and create a new => `gcob staging` for each "new development"
+
 After working in another branch
   `gcos` - switches to the `staging` branch\
   `gco -`' - always switches back to your *previous branch*

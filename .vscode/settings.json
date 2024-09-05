@@ -1,0 +1,23 @@
+{
+  "formatFiles.excludedFolders": [
+    "node_modules",
+    ".vscode",
+    ".git",
+    "dist",
+    ".chrome",
+    "temp"
+  ],
+  "[feature]": {
+    "editor.defaultFormatter": "alexkrechik.cucumberautocomplete",
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "off",
+        "strings": "on"
+    },
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false
+},
+"terminal.integrated.cursorBlinking": true,
+"terminal.integrated.fontSize": 16
+}
