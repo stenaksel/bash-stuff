@@ -1,0 +1,4 @@
+# Default ignored folders and files
+temp/*
+.idea/*
+.fleet/*

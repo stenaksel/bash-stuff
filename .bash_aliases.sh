@@ -1,9 +1,14 @@
 #!/bin/bash
 ESC='\033'
+FG_RED=31
+BG_RED=41
 FG_CYAN=36
-CYAN="${ESC}[0;${FG_CYAN}m"
+CYAN="${ESC}[${FG_CYAN}m"
+RED="${ESC}[${FG_RED}m"
+ALERT="${ESC}[${BG_RED}m"
 NC="${ESC}[0m" # No Color
-printf " Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${NC}\n"
+printf "\t Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${NC}\n"
+
 #TODO: Split file, use includes... create one file for each language (& OS?)
 # ----------------------
 # My aliases
@@ -19,6 +24,8 @@ alias hist='history'
 alias env_='while IFS="=" read -r key value; do printf "%-40s>_%s\n" "${key// /_}_" "$value" | sed "s/ /─/g" | sed "s/_/ /g"; done < <(env | sort)'
 
 alias hint='run hints'
+alias ls='ls -F'
+alias ll='ls -lh'
 #alias code=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe'
 #alias zero=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe --disable-extensions'
 # ---- Windows related: ----
@@ -28,20 +35,21 @@ alias exp='explorer.exe .'
 #alias type='echo ------ Running cat for you ------ && cat'
 alias os-ver='run cmd //c ver'
 alias os_='os-ver'
+alias bup='printf "Doing \"bash update\"" && run source ~/.bashrc'
 # ---- Python related: ----
 alias py-ver='run python --version && printf "@: " && which python'
 alias pip_='run pip --version'
 alias pip-dep-info='run pipdeptree -p '                   # add <name> of package to inform about
 alias pip-dep-info-reverse='run pipdeptree --reverse -p ' # add <name> of package to inform about
 alias pytest-ver='pytest --version && printf "\n"'
+alias pytest_='pytest-ver'
 alias pyt='run pytest -r fxs'
 alias pyt_f='printf "Run feature <filename>\n" && run pytest -r fxs --feature='
 alias pyt_s='printf "Run scenario \"scenario name\"\n" && run pytest -r fxs --feature='
+alias py_='printf "\n" && py-ver && printf "\n" && pip_ && printf "\n" && pytest_'
 alias bddf='pyt_f' #TODO create function to find context ('pyt_f' or 'cucumber_f')
 alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
 alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
-alias pytest_='run pytest --version && printf "\n"'
-alias py_='printf "\n" && py-ver && printf "\n" && pip_ && printf "\n" && pytest_'
 alias hist='cat ~/.bash_history'
 alias rmhist='rm ~/.bash_history; history -c;'
 # ---- Coding/BDD related: ----
@@ -99,7 +107,9 @@ alias py-workon-venv='printf "Activating Python Virtual Environment (using virtu
 alias ave=py-workon-venv     # Activates the virtual environment (using virtualenvwrapper: workon .)
 alias avenv=py-activate-venv # Activates the virtual environment (using .venv/Scripts/activate)
 alias venvs='venv && printf "\nAvailable virtual environments in $WORKON_HOME (workon): \n\n" && run workon'
-alias _='os-ver && python --version && pip --version && pytest --version && bdd-pt_ && venvs && printf "\n"'
+alias py_='python --version && pip --version && pytest --version && bdd-pt_ && venvs && printf "\n"'
+alias java_='run java --version'
+alias _='os_ && java_ && git_ && py_ && printf "\n"'
 
 # ----------------------
 # Git Aliases
@@ -150,5 +160,28 @@ alias gca='run git commit --amend'
 alias gdfh='run git diff --summary FETCH_HEAD'
 alias gfo='run git fetch origin' # add <name> what branch to fetch (eg. git fetch origin main)
 alias gnew='run git log $1@{1}..$1@{0} "$@"'
-alias git_='run git --version'
-alias gv='git_'
+alias git_='git --version'
+alias gv='run git --version'
+# My own nice aliases for working with Kotlin development (and Maven)
+alias ktlc='run mvn ktlint:check'     # format your Kotlin sources
+alias ktlf='run mvn ktlint:format'    # heck your Kotlin sources for code style violations
+alias ktlr='run mvn ktlint:ktlint'    # generate project report of code style violations
+
+# My own nice aliases for working with Maven
+alias 'pom?'='if [ ! -e pom.xml ]; then printf "\n${ALERT} --> No pom.xml file found in this folder!${NC}\n"; fi'
+alias mvn_='run mvn --version && pom?'
+# alias mvn_='pom? && run mvn --version'
+alias mvn-h='pom? && run mvn help:effective-pom'
+alias mep='mvn-h'
+alias mcu-deps='pom? && run mvn versions:display-dependency-updates'
+alias mcu-props='pom? && run mvn versions:display-property-updates'
+alias mcu-d='printf "\"Maven Check Updates - Dependencies\" \n> " && mcu-deps'
+alias mcu-p='printf "\"Maven Check Updates - Properties\" \n> " && mcu-props'
+alias mcu1='printf "\"Maven Check Updates\" \n> " && mcu-props && mcu-deps'
+alias mcu2='printf "\"Maven Check Updates\" \n> " && mvn? && mcu-props && mcu-deps'
+alias mcu2='printf "\"Maven Check Updates\" \n> " && mvn? && mcu-props && mcu-deps'
+alias mcu5='printf "\"Maven Check Updates\" \n> (Use alias \"mcu-up\" to update outdated) \n> " && mcu-deps && mcu-props'
+
+#alias mcu-up (or mvn-up ?) TODO: IF POSSIBLE
+alias mvn_dt='run mvn dependency:tree'   # Displays the dependency tree for this project.
+alias mci='pom? && run mvn clean install'

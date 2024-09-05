@@ -1,11 +1,11 @@
 #!/bin/bash
 # ESC='\033'
 # FG_CYAN=36
-# CYAN="${ESC}[0;${FG_CYAN}m"
+# CYAN="${ESC}[${FG_CYAN}m"
 # NC="${ESC}[0m" # No Color
 
-printf " Installing function definitions ...${CYAN}~/bash-stuff/.bash_functions${NC}\n"
-printf "  ( ${CYAN}hint${NC} -> show more info )\n\n"
+printf "\t Installing function definitions ...${CYAN}~/bash-stuff/.bash_functions${NC}\n"
+printf "\t  ( ${CYAN}hint${NC} -> show more info )\n\n"
 
 # ----------------------
 # My functions
@@ -17,7 +17,7 @@ function venv() {
         printf "$venv\n"
         printf "\n==> Inside virtualenv: $VIRTUAL_ENV ... $VIRTUAL_ENV_PROMPT"
     else
-        printf "\n==> Outside a virtualenv"
+        printf "\n==> Outside a virtualenv..."
     fi
 }
 
@@ -211,6 +211,49 @@ function run() {
     fi
     echo "no param for run command!"
 }
+
+#function run2() {
+#    args="$*" # Concatenate all arguments into a single string with spaces
+#    if [ -n "$*" ]; then
+#        echo '=>' "$@"
+#        echo 'a>' "[$args]"
+#        local str="$1"
+#        #if [[ "$str" == "mvn" ]]; then
+#        #if [[ "$1" == "mvn" ]]; then
+#        #if [[ " $args " == *" mvn "* && (" $args " == *" -v "*)]]; then
+#        echo "Check mvn"
+#        ###
+#        is_maven ?
+#        if [[ "$1" == "mvn" ]]; then
+#        pom_needed=false
+#          cmd="$1"
+#          arg="$2"
+#
+#          case "$cmd $arg" in
+#            "mvn -v" | "mvn --version" | "mvn --help")
+#              pom_needed=true
+#              ;;
+#          esac
+#
+#          echo "pom_needed: pom_needed"
+#
+#
+#        ###
+#        if [[ "$1" == "mvn" && !(" $args " == *" -v "*) || (" $args " == *" --version "*) ]]; then
+#
+#            echo "Maven!"
+#            if [ ! -e pom.xml ]; then
+#                echo "pom.xml finnes IKKE!"
+#                echo "Not running: $@"
+#                return 1
+#            fi
+#        fi
+#        "$@"
+#        return
+#    fi
+#    echo "no param for run command!"
+#}
+
 
 # Example for getting params in bash:
 # function bash_param() {

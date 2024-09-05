@@ -1,14 +1,14 @@
 # In your ~/.bashrc you should use this include:
+#Information about bash-stuff location (eg. $HOME/bash-stuff)
+# export BASH_STUFF_PATH="$HOME/bash-stuff"
 # if [ -e $HOME/bash-stuff/.bashrc-incl.sh ]; then
 #     source $HOME/bash-stuff/.bashrc-incl.sh
 # fi
 
-printf ".bashrc-incl.sh  ... (Installing \"bash-stuff\")\n"
-if [ -e $HOME/bash-stuff/.bash_aliases ]; then
-    # echo ".bashrc: source bash-stuff/.bash_aliases "
-    source $HOME/bash-stuff/.bash_aliases
+printf "\n Installing \"bash-stuff\" (in .bashrc-incl.sh)\n"
+if [ -e $BASH_STUFF_PATH/.bash_aliases.sh ]; then
+    source $BASH_STUFF_PATH/.bash_aliases.sh
 fi
-if [ -e $HOME/bash-stuff/.bash_functions ]; then
-    # echo ".bashrc: source bash-stuff/.bash_functions "
-    source $HOME/bash-stuff/.bash_functions
+if [ -e $BASH_STUFF_PATH/.bash_functions.sh ]; then
+    source $BASH_STUFF_PATH/.bash_functions.sh
 fi
