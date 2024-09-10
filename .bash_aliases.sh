@@ -24,8 +24,15 @@ alias hist='history'
 alias env_='while IFS="=" read -r key value; do printf "%-40s>_%s\n" "${key// /_}_" "$value" | sed "s/ /─/g" | sed "s/_/ /g"; done < <(env | sort)'
 
 alias hint='run hints'
-alias ls='ls -F'
-alias ll='ls -lh'
+
+# ---- Bash related: ----
+#alias ls='ls -F'
+alias lsa='ls -F -a'
+alias ll='run ls -lh'
+alias lla='run ls -lh -a'
+alias code-i='run_where idea'
+alias code-f='run_where fleet'
+alias code='code-i'
 #alias code=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe'
 #alias zero=~'/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/Code\ -\ Insiders.exe --disable-extensions'
 # ---- Windows related: ----
@@ -37,8 +44,13 @@ alias os-ver='run cmd //c ver'
 alias os_='os-ver'
 alias bup='printf "Doing \"bash update\"" && run source ~/.bashrc'
 # ---- Python related: ----
-alias py-ver='run python --version && printf "@: " && which python'
-alias pip_='run pip --version'
+alias py-ver='run python --version'
+alias py-ver@='printf "\n==%s --\n%s" "$(py-ver)" "$(run which python)"'
+#alias py-ver2='printf "%s \n(%s)\n" "$(python --version 2>&1)" "$(which python)"'
+# 2>&1: This redirects the standard error (file descriptor 2) to standard output (file descriptor 1).
+# This is necessary because older versions of Python used to print the version to standard error.
+alias pip-ver='run pip --version'
+alias pip_='pip-ver'
 alias pip-dep-info='run pipdeptree -p '                   # add <name> of package to inform about
 alias pip-dep-info-reverse='run pipdeptree --reverse -p ' # add <name> of package to inform about
 alias pytest-ver='pytest --version && printf "\n"'
@@ -46,9 +58,11 @@ alias pytest_='pytest-ver'
 alias pyt='run pytest -r fxs'
 alias pyt_f='printf "Run feature <filename>\n" && run pytest -r fxs --feature='
 alias pyt_s='printf "Run scenario \"scenario name\"\n" && run pytest -r fxs --feature='
-alias py_='printf "\n" && py-ver && printf "\n" && pip_ && printf "\n" && pytest_'
+alias py_='printf "\n" && py-ver@ && printf "\n" && pip_ && printf "\n" && pytest_ '
+#alias py2_='printf "%s \n%s" "$(run python --version)" "$(run which python)"'
+alias py2_='printf "\n%s \n%s" "$(py-ver)" "$(pip-ver)"'
+alias py2_2='printf "\n__%s \n__%s" "$(py-ver@)" "$(pip-ver)"'
 alias bddf='pyt_f' #TODO create function to find context ('pyt_f' or 'cucumber_f')
-alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
 alias bdds='printf "Run scenario "name of scenario"\n" && run pytest -r fxs --scenario='
 alias hist='cat ~/.bash_history'
 alias rmhist='rm ~/.bash_history; history -c;'
@@ -63,7 +77,8 @@ alias bdd-behave_='run behave --version && printf "\n"'
 alias bdd-b_='bdd-behave_'
 alias bdd-pytest='pyt'
 alias bdd-pt='bdd-pytest'
-alias bdd-pt_='bdd-pytest --version && printf "\n"'
+alias bdd-pt-ver='bdd-pytest --version && printf "\n"'
+alias bdd-pt_='run bdd-pytest --version && printf "\n"'
 alias bdd-pytest-lf='run pytest -r pfexs --lf'
 #
 # alias wip-tag='printf "All wip tagged scenarios :\n" && run find_scenarios_with_tags wip'
@@ -109,7 +124,7 @@ alias avenv=py-activate-venv # Activates the virtual environment (using .venv/Sc
 alias venvs='venv && printf "\nAvailable virtual environments in $WORKON_HOME (workon): \n\n" && run workon'
 alias py_='python --version && pip --version && pytest --version && bdd-pt_ && venvs && printf "\n"'
 alias java_='run java --version'
-alias _='os_ && java_ && git_ && py_ && printf "\n"'
+alias _='os_ && java_ && git-ver && py_ && printf "\n"'
 
 # ----------------------
 # Git Aliases
@@ -160,8 +175,8 @@ alias gca='run git commit --amend'
 alias gdfh='run git diff --summary FETCH_HEAD'
 alias gfo='run git fetch origin' # add <name> what branch to fetch (eg. git fetch origin main)
 alias gnew='run git log $1@{1}..$1@{0} "$@"'
-alias git_='git --version'
-alias gv='run git --version'
+alias git_='run git --version'
+alias git-ver='git --version'
 # My own nice aliases for working with Kotlin development (and Maven)
 alias ktlc='run mvn ktlint:check'     # format your Kotlin sources
 alias ktlf='run mvn ktlint:format'    # heck your Kotlin sources for code style violations
@@ -169,19 +184,17 @@ alias ktlr='run mvn ktlint:ktlint'    # generate project report of code style vi
 
 # My own nice aliases for working with Maven
 alias 'pom?'='if [ ! -e pom.xml ]; then printf "\n${ALERT} --> No pom.xml file found in this folder!${NC}\n"; fi'
-alias mvn_='run mvn --version && pom?'
-# alias mvn_='pom? && run mvn --version'
 alias mvn-h='pom? && run mvn help:effective-pom'
-alias mep='mvn-h'
 alias mcu-deps='pom? && run mvn versions:display-dependency-updates'
 alias mcu-props='pom? && run mvn versions:display-property-updates'
 alias mcu-d='printf "\"Maven Check Updates - Dependencies\" \n> " && mcu-deps'
 alias mcu-p='printf "\"Maven Check Updates - Properties\" \n> " && mcu-props'
-alias mcu1='printf "\"Maven Check Updates\" \n> " && mcu-props && mcu-deps'
-alias mcu2='printf "\"Maven Check Updates\" \n> " && mvn? && mcu-props && mcu-deps'
-alias mcu2='printf "\"Maven Check Updates\" \n> " && mvn? && mcu-props && mcu-deps'
-alias mcu5='printf "\"Maven Check Updates\" \n> (Use alias \"mcu-up\" to update outdated) \n> " && mcu-deps && mcu-props'
-
-#alias mcu-up (or mvn-up ?) TODO: IF POSSIBLE
-alias mvn_dt='run mvn dependency:tree'   # Displays the dependency tree for this project.
+alias mcu='printf "\"Maven Check Updates\" \n> " && mcu-deps && mcu-props && printf "\"Maven Update versions\" \n> (Use alias \"mcu-up\" to update outdated) \n> "'
+alias mcu-up='printf "\"Maven Update versions\" \n> (Use alias \"mcu-up\" to update outdated) \n> " && mvn versions:use-latest-releases'
+alias mdt='pom? && mvn dependency:tree'
+alias mep='pom? && run mvn help:effective-pom > temp/the-pom.xml'
+alias meps='mep > temp/the-pom.xml'
 alias mci='pom? && run mvn clean install'
+alias mct='pom? && run mvn clean test'
+#alias mvn_='pom? && run mvn --version'
+alias mvn_='run mvn --version && pom?'

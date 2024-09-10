@@ -918,3 +918,14 @@ find_py_tags() {
         echo "$line"
     done
 }
+
+run_where() {
+  local cmd_path
+  cmd_path=$(which "$1" 2>/dev/null || where "$1" 2>/dev/null | head -n 1)
+  if [ -n "$cmd_path" ]; then
+    echo "Starting: $1 from ${cmd_path}"
+    "$cmd_path" "${@:2}"
+  else
+    echo "Command not found: $1"
+  fi
+}
