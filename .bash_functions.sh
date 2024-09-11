@@ -1,8 +1,4 @@
 #!/bin/bash
-# ESC='\033'
-# FG_CYAN=36
-# CYAN="${ESC}[${FG_CYAN}m"
-# NC="${ESC}[0m" # No Color
 
 printf "\t Installing function definitions ...${CYAN}~/bash-stuff/.bash_functions${NC}\n"
 printf "\t  ( ${CYAN}hint${NC} -> show more info )\n\n"
@@ -22,6 +18,7 @@ function venv() {
 }
 
 function hints() {
+# TODO Modify how hints are generated and shown based on comments in each alias and function
     printf "\nhints()\t( <p> means param(s) )\n-------\n"
     printf "alias-match <p>\t = \"Alias matching\" <p> ( Calls grep with param(s) )\n"
     printf "a4 <p>\t = \"Alias for\" matching -> 'alias-match' <p>\n"
@@ -927,5 +924,14 @@ run_where() {
     "$cmd_path" "${@:2}"
   else
     echo "Command not found: $1"
+  fi
+}
+
+check_pom() {
+  if [ ! -f "pom.xml" ]; then
+    printf "\n${ALERT} --> No pom.xml file found in this folder!${NC}\n"
+    return 1
+#  else
+#    printf "\npom.xml file found in this folder.\n"
   fi
 }
