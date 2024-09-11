@@ -1,15 +1,7 @@
 #!/bin/bash
-ESC='\033'
-FG_RED=31
-BG_RED=41
-FG_CYAN=36
-CYAN="${ESC}[${FG_CYAN}m"
-RED="${ESC}[${FG_RED}m"
-ALERT="${ESC}[${BG_RED}m"
-NC="${ESC}[0m" # No Color
+
 printf "\t Installing alias definitions ......${CYAN}~/bash-stuff/.bash_aliases${NC}\n"
 
-#TODO: Split file, use includes... create one file for each language (& OS?)
 # ----------------------
 # My aliases
 # ----------------------
@@ -183,17 +175,31 @@ alias ktlf='run mvn ktlint:format'    # heck your Kotlin sources for code style 
 alias ktlr='run mvn ktlint:ktlint'    # generate project report of code style violations
 
 # My own nice aliases for working with Maven
-alias 'pom?'='if [ ! -e pom.xml ]; then printf "\n${ALERT} --> No pom.xml file found in this folder!${NC}\n"; fi'
+alias 'pom?'='check_pom'
 alias mvn-h='pom? && run mvn help:effective-pom'
-alias mcu-deps='pom? && run mvn versions:display-dependency-updates'
-alias mcu-props='pom? && run mvn versions:display-property-updates'
-alias mcu-d='printf "\"Maven Check Updates - Dependencies\" \n> " && mcu-deps'
-alias mcu-p='printf "\"Maven Check Updates - Properties\" \n> " && mcu-props'
-alias mcu='printf "\"Maven Check Updates\" \n> " && mcu-deps && mcu-props && printf "\"Maven Update versions\" \n> (Use alias \"mcu-up\" to update outdated) \n> "'
+alias 'mvn-hs'='"printf "Saving : " && mvn-h > temp/effective-pom.xml && printf "\"(result in temp/effective-pom.xml))\n"'
+alias 'mvn-hs!'='"mvn-h > temp/effective-pom.xml printf "Saving : " && printf "\"(Saved info in temp/effective-pom.xml))\n"'
+
+# Maven pom dependency info
+alias mvn_ver:ddu='pom? && run mvn versions:display-dependency-updates'
+alias mcu-d='printf "\"Maven Check Updates - Dependencies\" \n" && mvn_ver:ddu'
+alias mcu-ds='printf "Saving : " && mcu-d > temp/pom-deps.txt && printf "\"(result in temp/pom-deps.txt)\n"'
+
+# Maven pom verssion info
+alias mvn_ver:dpu='pom? && run mvn versions:display-property-updates'
+alias mcu-p='printf "\"Maven Check Updates - Properties\" \n" && mvn_ver:dpu'
+alias mcu-ps='printf "Saving : " && mcu-p > temp/pom-properties.txt && printf "(result in temp/pom-properties.txt)"'
+alias mcu-psi='printf "Saving without [INFO]: " && mcu-p | grep -v "^\[INFO\]" > temp/pom-properties.txt && printf "\"(result in temp/pom-properties.txt)"'
+alias mcu-p-s='printf "\"Maven Properties - Show\" \n" && cat temp/pom-properties.txt'
+alias mcu-p-si='printf "\"Maven Properties - Show without [INFO]\" \n" && cat temp/pom-properties.txt | grep -v "^\\[INFO\\]"'
+
+alias mcu='printf "\"Maven Check Updates\" \n> " && mcu-d && mcu-p && printf "\n(Use alias \"mcu-up\" to update outdated) \n> "'
 alias mcu-up='printf "\"Maven Update versions\" \n> (Use alias \"mcu-up\" to update outdated) \n> " && mvn versions:use-latest-releases'
-alias mdt='pom? && mvn dependency:tree'
-alias mep='pom? && run mvn help:effective-pom > temp/the-pom.xml'
-alias meps='mep > temp/the-pom.xml'
+alias mvn_dt='pom? && mvn dependency:tree'
+alias meps='mep > temp/the-pom.xml && printf "Check temp/the-pom.xml"'
+alias mdts='mdt > temp/the-pom.xml && printf "Check temp/the-pom.xml"'
+alias mep='pom? && run mvn help:effective-pom'
+alias meps='mep > temp/the-pom.xml && printf "Check temp/the-pom.xml"'
 alias mci='pom? && run mvn clean install'
 alias mct='pom? && run mvn clean test'
 #alias mvn_='pom? && run mvn --version'
