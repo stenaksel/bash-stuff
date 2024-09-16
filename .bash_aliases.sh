@@ -173,19 +173,28 @@ alias git-ver='git --version'
 alias ktlc='run mvn ktlint:check'     # format your Kotlin sources
 alias ktlf='run mvn ktlint:format'    # heck your Kotlin sources for code style violations
 alias ktlr='run mvn ktlint:ktlint'    # generate project report of code style violations
-
+alias kt_='run kotlinc -version'
 # My own nice aliases for working with Maven
 alias 'pom?'='check_pom'
-alias mvn-h='pom? && run mvn help:effective-pom'
-alias 'mvn-hs'='"printf "Saving : " && mvn-h > temp/effective-pom.xml && printf "\"(result in temp/effective-pom.xml))\n"'
-alias 'mvn-hs!'='"mvn-h > temp/effective-pom.xml printf "Saving : " && printf "\"(Saved info in temp/effective-pom.xml))\n"'
+alias mvn0-hs='run "mvn help:effective-pom > temp/effective-pom.xml" && printf "\n.........saved ${CYAN}temp/effective-pom.xml${NC}\n"'
+alias mvn1='run "gs > temp/gs.txt"'
+alias mvn2-h='run "pom? && mvn help:effective-pom"'
+alias mvn2-hs='run "pom? && mvn help:effective-pom > temp/effective-pom.xml" && printf "\n.........saved ${CYAN}temp/effective-pom.xml${NC}\n"'
+alias mvn3-h='run "pom? && mvn help:effective-pom"'
+alias mvn3-hs='run "pom? && mvn help:effective-pom > temp/effective-pom.xml" && printf "\n.........saved ${CYAN}temp/effective-pom.xml${NC}\n"'
+alias mvn4-h='pom? && run "mvn help:effective-pom"'
+alias mvn4-hs='pom? && run "mvn help:effective-pom > temp/effective-pom.xml" && printf "\n.........saved ${CYAN}temp/effective-pom.xml${NC}\n"'
+alias mvn-h='printf "=> mvn help:effective-pom" && pom? && mvn help:effective-pom'
+alias mvn-hs='printf "=> mvn help:effective-pom > temp/effective-pom.xml\n" && mvn-h > temp/effective-pom.xml && printf "\n.........saved ${CYAN}temp/effective-pom.xml${NC}\n"'
+alias mvn5-hs='run "mvn help:effective-pom > temp/effective-pom5.xml" && printf "\n.........saved ${CYAN}temp/effective-pom.xml${NC}\n"'
+
 
 # Maven pom dependency info
 alias mvn_ver:ddu='pom? && run mvn versions:display-dependency-updates'
 alias mcu-d='printf "\"Maven Check Updates - Dependencies\" \n" && mvn_ver:ddu'
 alias mcu-ds='printf "Saving : " && mcu-d > temp/pom-deps.txt && printf "\"(result in temp/pom-deps.txt)\n"'
 
-# Maven pom verssion info
+# Maven pom version info
 alias mvn_ver:dpu='pom? && run mvn versions:display-property-updates'
 alias mcu-p='printf "\"Maven Check Updates - Properties\" \n" && mvn_ver:dpu'
 alias mcu-ps='printf "Saving : " && mcu-p > temp/pom-properties.txt && printf "(result in temp/pom-properties.txt)"'

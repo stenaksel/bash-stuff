@@ -200,7 +200,7 @@ function a4g-() {
     alias-match - git
 }
 
-function run() {
+function xrun() {
     if [ -n "$*" ]; then
         echo '=>' "$@"
         "$@"
@@ -208,6 +208,47 @@ function run() {
     fi
     echo "no param for run command!"
 }
+
+function run() {
+    local all_params="$*"
+    shopt -s expand_aliases
+
+    if [ -n "$*" ]; then
+#        printf "0%s " "$@"
+
+        # Split the command while preserving quotes
+        IFS=' ' read -r -a args <<< "$*"
+
+        echo "=>" "$@"
+        echo "->" "$*"
+        # If Maven involved we need a pom.xml file. If not found just alert and quit!
+        if [[ "$all_params" == *"mvn"* ]]; then
+          if [ ! -f "pom.xml" ]; then
+            printf "\n${RED}=> ${all_params}${NC}\t${ALERT} No pom.xml file found in this folder! ${NC}\n"
+            return 1
+          fi
+        fi
+        # Check if the first argument is an alias
+        alias_name=$(echo "${args[0]}" | awk '{print $1}')
+
+        if alias | grep -q "alias $alias_name="; then
+            # Expand alias by executing it in a safe way to get its expanded form
+            expanded_command=$(alias $alias_name | awk -F= '{print $2}' | sed "s/^'//;s/'$//")
+            echo "=1>" "$expanded_command ${args[@]:1}"
+            eval "$expanded_command" "${args[@]:1}"
+        else
+#            echo "=2>" "$@"
+            printf "=> ${CYAN} ${all_params} ${NC}\n"
+            "$@"
+        fi
+    else
+        echo "no param for run command!"
+    fi
+}
+
+# Test cases
+# run gss
+# run "gss > gss.txt"
 
 #function run2() {
 #    args="$*" # Concatenate all arguments into a single string with spaces
@@ -929,9 +970,7 @@ run_where() {
 
 check_pom() {
   if [ ! -f "pom.xml" ]; then
-    printf "\n${ALERT} --> No pom.xml file found in this folder!${NC}\n"
+    printf "\n${ALERT} No pom.xml file found in this folder! ${NC}\n"
     return 1
-#  else
-#    printf "\npom.xml file found in this folder.\n"
   fi
 }
