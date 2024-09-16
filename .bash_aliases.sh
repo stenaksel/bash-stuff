@@ -128,6 +128,8 @@ alias gaa='run git add .' # Adds all files in the current directory to the index
 alias gaaa='run git add --all'
 alias gau='run git add --update'
 alias gb='run git branch -a' # show branches (local and remote)
+alias gb-hist='for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+                    echo -e $(git log -1 --format="%ci" $branch)\\t$branch;' # show last update time on branches
 alias gbd='run git branch -d' # add <name> what branch to delete
 alias 'gbD'='run git branch -D' # add <name> what branch to force delete
 # alias gbda='git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d'
