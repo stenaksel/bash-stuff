@@ -175,6 +175,8 @@ alias gfo='run git fetch origin' # add <name> what branch to fetch (eg. git fetc
 alias gnew='run git log $1@{1}..$1@{0} "$@"'
 alias git_='run git --version'
 alias git-ver='git --version'
+
+alias mvnc='python -m webbrowser https://search.maven.org/' # Open Maven Central Repository
 # My own nice aliases for working with Kotlin development (and Maven)
 alias ktlc='run mvn ktlint:check'     # format your Kotlin sources
 alias ktlf='run mvn ktlint:format'    # heck your Kotlin sources for code style violations
