@@ -21,7 +21,9 @@ function hints() {
 # TODO Modify how hints are generated and shown based on comments in each alias and function
     printf "\nhints()\t( <p> means param(s) )\n-------\n"
     printf "alias-match <p>\t = \"Alias matching\" <p> ( Calls grep with param(s) )\n"
+    printf "alias-match -<p>\t = \"Alias not matching\" <p>\n"
     printf "a4 <p>\t = \"Alias for\" matching -> 'alias-match' <p>\n"
+    printf "a4 -<p>\t = \"Alias not\" matching -> 'alias-match' -<p>\n"
     printf "a4g\t = Showing all git aliases -> 'a4 git'\n"
     printf "a4g-\t = Showing all non-git aliases (-> 'a4 -git' => 'a4 --invert-match git')\n"
     # printf "a4g-\t = --''--\n"
@@ -117,7 +119,6 @@ function detect-bdd-tool() {
 function pip-info() {
     local _options=$@ # grep option(s) to use
     local _the_grep="grep git"
-    # printf "a4g()\n grep option(s): '$_options'\n"
     echo 'param =>' "'$1'"
     if (($# == 0)); then
         echo "no dependency supplied for pip-info!"
@@ -147,41 +148,127 @@ function py_install_requirements() {
     fi
 }
 
-function alias-match() {
-    local _num_params=$#
-    local _pattern="$@" # grep option(s) to use
-    local _options=""   # for building the grep option(s) to use
-    printf "alias-match: \n\tGot $_num_params param(s): ($_pattern)\n"
-    if [ $_num_params -eq 0 ]; then
-        printf "\n(No paramer(s) supplied! Needs at least a pattern to match -> Exiting function!)\n"
-        return
-    elif [[ ${_pattern:0:2} == "- " ]]; then
-        _options="--invert-match "
-        printf "=> Starts with '- ' => $_options\n"
-        _pattern="${_pattern:2}"
-        printf "=> (_pattern: '$_pattern')\n"
+function give_warning_and_info() {
+    # Checking the number of parameters passed
+    # Ensure that the function is called with at least one parameter.
+    # Param 1 = theWarning
+    # Param 2 = hint(s)
+    # If no parameters, print a usage message and return with an error code 1.
+    if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+        echo "Usage: give_warning_and_info <first string> [second string]"
+        return 1
     fi
-    printf "=> (_pattern: '$_pattern')\n"
 
-    printf "alias-match()\n _num_params=$_num_params (_pattern: '$_pattern') -> grep option(s): '$_options'\n"
-    printf "\nalias-match : \n-------------\n"
-    echo '1=>' "('$_options' == '$*') $1"
-    # if [ "$_options" = "" ]; then
+    # Assigning the first parameter to a local variable
+    local theWarning="$1"
 
-    # if (( $# > 1 ) && [ "$1" = "-" ]); then
+    # Assigning the second parameter to a local variable, if provided
+    local hints=""
+    if [ "$#" -eq 2 ]; then
+        hints="$2"
+    fi
 
-    #     _options = "--invert-match"
-    #     _the_grep="grep $_options git"
-    #     printf "\n(Option '$1' ==> '$_the_grep')\na4g $1 :  non-git aliases\n------------------------ \n"
-    # else
-    #     # _options=""
-    #     _the_grep="grep $_options git"
-    #     printf "(Unknown alias-match option: '$_options' !!! Will try it)\n"
-    # fi
+    # Printing the values for demonstration
+    echo "First String: $theWarning"
+    if [ -n "$hints" ]; then
+        echo "Second String: $hints"
+    else
+        echo "Second String is not provided."
+    fi
 
-    printf "Will try grepping: alias | grep [$_options] [$_pattern] \n"
-    # alias | grep $_options $_pattern
-    alias | grep $_options $_pattern | awk -F'=' '{gsub(/^alias /, "", $1); printf "%-5s: %-20s\n", $1, $2}'
+    # Your warning and information logic goes here
+    # For example, you could print a warning message based on the given strings
+    echo "Warning: Something might need attention related to '$theWarning'!"
+    if [ -n "$hints" ]; then
+        echo "Info: Additional context related to '$hints'."
+    fi
+}
+
+function alias-match() {
+    # Check if any parameters are passed
+    if [ "$#" -eq 0 ]; then
+        printf "${ALERT}No parameter(s) supplied!${NC}${CYAN}\nUsage: alias-match <pattern>${NC}"
+        give_warning_and_info "No parameter(s) supplied!" "Usage: alias-match <pattern>"
+        return 1
+    fi
+    local _num_params=$#
+    # Concatenate all parameters into a single pattern
+    local _pattern="$*"
+
+    # Get the list of all aliases
+    local all_aliases
+    all_aliases=$(alias)
+
+    # Filter aliases based on the combined pattern
+    local filtered_aliases
+    filtered_aliases=$(echo "$all_aliases" | grep --ignore-case "$_pattern")
+
+    # Print the filtered aliases
+    if [ -n "$filtered_aliases" ]; then
+        echo "Aliases containing pattern '$_pattern':"
+        echo "$filtered_aliases"
+    else
+        echo "No aliases found containing the pattern '$_pattern'"
+    fi
+
+#    # Get the list of all aliases
+#    local all_aliases
+#    all_aliases=$(alias)
+#    echo "Before for loop! ${pattern}"
+#
+#    # Filter aliases based on all provided patterns
+#    filtered_aliases="$all_aliases"
+#    for pattern in "$@"; do
+#        filtered_aliases=$(echo "$filtered_aliases" | grep --ignore-case "$pattern")
+#    done
+#
+#    # Print the filtered aliases
+#    if [ -n "$filtered_aliases" ]; then
+#        echo "Aliases containing all patterns '$*':"
+#        echo "$filtered_aliases"
+#    else
+#        echo "No aliases found containing all patterns '$*'"
+#    fi
+
+
+#    # Loop through each parameter
+#    for pattern in "$@"; do
+#        # Filter and print aliases that contain the pattern
+#        echo "Aliases containing pattern '$pattern':"
+#        echo "$all_aliases" | grep --ignore-case --color=always "$pattern"
+#        echo ""
+#    done
+    echo "After for loop!"
+}
+#
+#    local _pattern="$@" # grep option(s) to use
+#    local _options=""   # for building the grep option(s) to use
+#    printf "alias-match: \n\tGot $_num_params param(s): ($_pattern)\n"
+#    if [ $_num_params -eq 0 ]; then
+#        printf "\n(No paramer(s) supplied! Needs at least a pattern to match -> Exiting function!)\n"
+#        return
+#    fi
+#    if [[ ${_pattern:0:2} == "- " ]]; then
+#        _options="--invert-match "
+#        printf "=> Starts with '- ' => $_options\n"
+#        _pattern="${_pattern:2}"
+#        printf "=> (_pattern: '$_pattern')\n"
+#    fi
+#    printf "=> (_pattern: '$_pattern')\n"
+#
+#    printf "alias-match()\n _num_params=$_num_params (_pattern: '$_pattern') -> grep option(s): '$_options'\n"
+#    printf "\nalias-match : \n-------------\n"
+#    echo '1=>' "('$_options' == '$*') $1"
+#
+#    printf "Will try grepping: alias | grep $_options '$_pattern' \n"
+#    # alias | grep $_options $_pattern
+#    alias | grep $_options '${_pattern}' #| awk -F'=' '{gsub(/^alias /, "", $1); printf "%-5s: %-20s\n", $1, $2}'
+#}
+
+function am() {
+    printf "\nam => \"alias-match\"\n"
+    alias-match git log
+#    alias-match "$@"
 }
 
 function a4() {
@@ -210,88 +297,114 @@ function xrun() {
 }
 
 function run() {
-    local all_params="$*"
-    shopt -s expand_aliases
+    local full_cmd="$*"
+    local cmd_desc
+    local org_cmd
+#    printf "full_cmd: %s\n" "$full_cmd"
 
-    if [ -n "$*" ]; then
-#        printf "0%s " "$@"
-
-        # Split the command while preserving quotes
-        IFS=' ' read -r -a args <<< "$*"
-
-        echo "=>" "$@"
-        echo "->" "$*"
-        # If Maven involved we need a pom.xml file. If not found just alert and quit!
-        if [[ "$all_params" == *"mvn"* ]]; then
-          if [ ! -f "pom.xml" ]; then
-            printf "\n${RED}=> ${all_params}${NC}\t${ALERT} No pom.xml file found in this folder! ${NC}\n"
-            return 1
-          fi
-        fi
-        # Check if the first argument is an alias
-        alias_name=$(echo "${args[0]}" | awk '{print $1}')
-
-        if alias | grep -q "alias $alias_name="; then
-            # Expand alias by executing it in a safe way to get its expanded form
-            expanded_command=$(alias $alias_name | awk -F= '{print $2}' | sed "s/^'//;s/'$//")
-            echo "=1>" "$expanded_command ${args[@]:1}"
-            eval "$expanded_command" "${args[@]:1}"
-        else
-#            echo "=2>" "$@"
-            printf "=> ${CYAN} ${all_params} ${NC}\n"
-            "$@"
-        fi
+    # Split full_cmd into command and description based on double colons
+    if [[ "$full_cmd" == *"::"* ]]; then
+        cmd_desc="${full_cmd##*::}"
+        org_cmd="${full_cmd%%::*}"
     else
-        echo "no param for run command!"
+        org_cmd="$full_cmd"
     fi
+#    printf "cmd_desc: %s\n" "$cmd_desc"
+#    printf "org_cmd: %s\n" "$org_cmd"
+
+    local org_cmd_arr=($org_cmd)
+    local args=()
+
+    # Iterate through each argument and escape % characters
+    for arg in "${org_cmd_arr[@]}"; do
+        args+=("$(echo "$arg" | sed 's/%/%%/g')")
+    done
+
+    # Join the escaped arguments back into a single string
+    local the_cmd="${args[*]}"
+#    printf "the_cmd: %s\n" "$the_cmd"
+
+    # Revert the expansion of ~ to the literal ~
+    local display_cmd_desc=$(echo "$the_cmd" | sed "s|$HOME|~|g")
+#    printf "display_cmd_desc: %s\n" "$display_cmd_desc"
+
+    if [[ -n "$cmd_desc" && "$cmd_desc" != "$full_cmd" ]]; then
+        printf "${CYAN} => %s\n" "$display_cmd_desc  <-- $cmd_desc"
+    else
+        printf "${CYAN} => %s\n" "$the_cmd"
+    fi
+    printf "|==============================================================================${NC}\n"
+    # If Maven involved we need a pom.xml file.
+    # If not found just alert and quit!
+    if [[ "$the_cmd" == *"mvn"* ]]; then
+        check_pom
+        local status=$?
+        if [ $status -ne 0 ]; then
+            return $status
+        fi
+    fi
+
+    eval "$the_cmd"
+}
+function alias_info() {
+    # Example aliases
+    #alias c='run clear::Clear the terminal screen'
+    #alias l='run ls -l::List in long format'
+    # Get the list of aliases and sort them by name
+    local aliases
+    aliases=$(alias | sort)
+
+    # Header for the output
+    printf "| Name  | Description             |\n"
+    printf "|-------|--------------------------|\n"
+
+    # Iterate over each alias
+    while IFS= read -r line; do
+        # Extract alias name and command content
+        local name="${line%%=*}"
+        local full_cmd="${line#*=}"
+
+        # Remove leading/trailing single quotes from full_cmd
+        full_cmd="${full_cmd#\'*}"
+        full_cmd="${full_cmd%\'}"
+
+        # Extract description if present
+        local desc
+        if [[ "$full_cmd" == *"::"* ]]; then
+            desc="${full_cmd##*::}"
+            desc="${desc%\'*}"  # Remove any trailing quote if present
+        else
+            desc="$full_cmd"
+        fi
+
+        # Output alias name and description
+        printf "| %-5s | %-24s |\n" "$name" "$desc"
+    done <<< "$aliases"
 }
 
-# Test cases
-# run gss
-# run "gss > gss.txt"
 
-#function run2() {
-#    args="$*" # Concatenate all arguments into a single string with spaces
-#    if [ -n "$*" ]; then
-#        echo '=>' "$@"
-#        echo 'a>' "[$args]"
-#        local str="$1"
-#        #if [[ "$str" == "mvn" ]]; then
-#        #if [[ "$1" == "mvn" ]]; then
-#        #if [[ " $args " == *" mvn "* && (" $args " == *" -v "*)]]; then
-#        echo "Check mvn"
-#        ###
-#        is_maven ?
-#        if [[ "$1" == "mvn" ]]; then
-#        pom_needed=false
-#          cmd="$1"
-#          arg="$2"
-#
-#          case "$cmd $arg" in
-#            "mvn -v" | "mvn --version" | "mvn --help")
-#              pom_needed=true
-#              ;;
-#          esac
-#
-#          echo "pom_needed: pom_needed"
-#
-#
-#        ###
-#        if [[ "$1" == "mvn" && !(" $args " == *" -v "*) || (" $args " == *" --version "*) ]]; then
-#
-#            echo "Maven!"
-#            if [ ! -e pom.xml ]; then
-#                echo "pom.xml finnes IKKE!"
-#                echo "Not running: $@"
-#                return 1
-#            fi
-#        fi
-#        "$@"
-#        return
-#    fi
-#    echo "no param for run command!"
-#}
-
+function xrun() {
+    local org_cmd=("$@")
+    # Iterate through each argument and escape % characters
+    local args=()
+    for arg in "$@"; do
+        args+=("$(echo "$arg" | sed 's/%/%%/g')")
+    done
+    # Join the escaped arguments back into a single string
+    local the_cmd="${args[*]}"
+    printf " ${CYAN} => $the_cmd\n"
+    printf "|==============================================================================${NC}\n"
+    # If Maven involved we need a pom.xml file.
+    # If not found just alert and quit!
+    if [[ "$the_cmd" == *"mvn"* ]]; then
+        check_pom
+        local status=$?
+        if [ $status -ne 0 ]; then
+            return $status
+        fi
+    fi
+    eval "$the_cmd"
+}
 
 # Example for getting params in bash:
 # function bash_param() {
@@ -518,7 +631,7 @@ function maybe-call-workon() {
     ave
 }
 
-find_scenarios_without_tags() {
+function find_scenarios_without_tags() {
     directory='.'
     scenarios_without_tags=()
 
@@ -541,7 +654,7 @@ find_scenarios_without_tags() {
 # directory="path/to/your/directory"
 # find_scenarios_without_tags "$directory"
 
-find_scenarios_with_tag() {
+function find_scenarios_with_tag() {
     directory='.'
     tag=$2
     scenarios_with_tag=()
@@ -565,7 +678,7 @@ find_scenarios_with_tag() {
     printf "%s\n" "${scenarios_with_tag[@]}" | awk -F'¤' '{printf "%s\t%s\n", $1, $2}' | column -t -s $'\t'
 }
 
-xxxfind_tags() {
+function xxxfind_tags() {
     # Initialize the "found" list
     found=()
 
@@ -591,7 +704,7 @@ xxxfind_tags() {
     done
 }
 
-xxfind_tags() {
+function xxfind_tags() {
     # Initialize the "found" list
     found=()
 
@@ -622,7 +735,7 @@ xxfind_tags() {
     done
 }
 
-xfind_tags() {
+function xfind_tags() {
     # Initialize the "found" list
     found=()
 
@@ -728,7 +841,7 @@ xfind_tags() {
 # }
 
 # TODO: Remove check_string?
-check_string() {
+function check_string() {
     local str_par="$1" # Assign the first parameter to str_par
     shift              # Shift the parameters to the left, excluding str_par
     local tags=("$@")  # Store the remaining parameters in tags array
@@ -751,7 +864,7 @@ check_string() {
     echo "$str_par"
 }
 
-find_tags() {
+function find_tags() {
     # Initialize the "found" list
     local found_tags=()
     local found_lines=()
@@ -865,7 +978,7 @@ find_tags() {
 }
 
 # TODO: if tags start with 'pytest.mark.' then search in py files
-find_py_tags() {
+function find_py_tags() {
     # Initialize the "found" list
     local found_tags=()
     local found_lines=()
@@ -957,7 +1070,7 @@ find_py_tags() {
     done
 }
 
-run_where() {
+function run_where() {
   local cmd_path
   cmd_path=$(which "$1" 2>/dev/null || where "$1" 2>/dev/null | head -n 1)
   if [ -n "$cmd_path" ]; then
@@ -968,9 +1081,32 @@ run_where() {
   fi
 }
 
-check_pom() {
+function check_pom() {
   if [ ! -f "pom.xml" ]; then
     printf "\n${ALERT} No pom.xml file found in this folder! ${NC}\n"
     return 1
   fi
+}
+
+function confirm_action() {
+    # Capture the command to be executed.
+    local command="$1"
+
+    # Inform the user about the command to be executed.
+    printf "\n ${ALERT} You are about to run: ${NC}${CYAN} $command ${NC}\n"
+#    echo "You are about to run: $command"
+        # Prompt the user for confirmation.
+    echo "  Are you sure?"
+
+    # Read the user's input.
+    read -r -s -n 1 -p "  Press Y key to continue or any other key to cancel!" confirmation
+    echo # To add a new line after user input
+
+    # Check if the input is 'Y' or 'y'.
+    if [[ $confirmation =~ ^[Yy]$ ]]; then
+        # Execute the provided command.
+        eval "$1"
+    else
+        printf "\n  ${CYAN}Operation cancelled!${NC}"
+    fi
 }

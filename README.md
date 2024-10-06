@@ -1,6 +1,50 @@
-# Useful bash aliases & functions (from "bash_stuff")
+# bash-stuff
 
 After working with bash for many years you get used to having aliases for different development stuff available.
+The last years I have been programming on Windows and have used "Git Bash".
+(I have also configured this to be default terminal in my IDE: IntelliJ IDEA)
+
+These are a collection of my "bash-stuff", that can be useful to others.
+I would love to get feedback ... or simply a 'Hi - I have tried / I am using - "bash-stuff". :-)' 
+
+## How to install "bash_stuff"
+Clone or download the zip file from GitHub 
+
+Edit your .bashrc file in your home directory ($HOME = ~ in bash).
+Include the configuration below, and change BASH_STUFF_PATH to where you put bash_stuff. 
+(I have the code in ~/code/bash-stuff directory: $HOME/code/bash-stuff)
+```
+# Information about bash-stuff location must be set:
+export BASH_STUFF_PATH="$HOME/code/bash-stuff"  # <-- where you have downloaded "bash-stuff"
+export BASH_STUFF_INCL="git, mvn, py, kt"       # <-- what focus you have for aliases to use
+if [ ! -e $BASH_STUFF_PATH ]; then
+    printf " WARNING! BASH_STUFF_PATH DON'T EXIST ($BASH_STUFF_PATH)"
+else
+    # Show the configuration:
+    printf "BASH_STUFF_PATH : $BASH_STUFF_PATH\t (configured in ~.bashrc)\n"
+    printf "BASH_STUFF_INCL : $BASH_STUFF_INCL\t (configured in ~.bashrc)\n"
+    if [ -e $BASH_STUFF_PATH/.bashrc-incl.sh ]; then
+        printf " Found .bashrc-incl.sh in BASH_STUFF_PATH ($BASH_STUFF_PATH)\n"
+        # Install all "bash-stuff" 
+        # The context strings in BASH_STUFF_INCL specifies aliases to include.
+        # For example if it is BASH_STUFF_INCL="git, mvn" 
+        # Then the two files .bash_aliases_git.sh and .bash_aliases_mvn.sh
+        # will be installed.
+        source $BASH_STUFF_PATH/.bashrc-incl.sh
+        # HINT:
+        # If you have some personal aliases you could create a file e.g. ".bash_aliases_my.sh"
+        # and add 'my' to the end of list in BASH_STUFF_INCL.
+
+        # If you think your alias(es) should be part of "bash-stuff" so everybody can use,
+        # then send me the suggested addition with a pull request (or in e-mail) 
+    else
+        printf " WARNING! Could not find .bashrc-incl.sh in $BASH_STUFF_PATH\n"
+    fi
+fi
+
+```
+# Some examples of useful bash aliases & functions (from "bash_stuff")
+
 
 | Command          | Aka                  | Description                                                           |
 |------------------|----------------------|-----------------------------------------------------------------------|
@@ -25,6 +69,7 @@ After working with bash for many years you get used to having aliases for differ
 | `mcu-d`          |                      | Maven Check Updates - _Dependencies_                                  |
 | `mcu-p`          |                      | Maven Check Updates - _Properties_                                    |
 | `venv`           |                      | Show info about configured virtual environment _(in shell)_           |
+| `bup`            |                      | Bash Update (`source ~/.bashrc`)                                      |
 | `code`           |                      | Open your favourite editor                                            |
 | `ll`             | ls -lh               | Show content of folder                                                |
 | `lla`            | ls -lh -a            | Show content of folder _including hidden_                             |
@@ -43,15 +88,16 @@ After working with bash for many years you get used to having aliases for differ
 ## A nice git flow
 
 When you have checked out a git repo and want to make some changes you can quickly come up to speed when using these aliases/functions:
-
-`gcob staging` (=> `git checkout -b staging`) - creates branch `staging` and switches to it.
+(Here `feature/next` is just an example for a new branch name)
+`gcob feature/next` (=> `git checkout -b feature/next`) - creates branch `feature/next` and switches to it.
 
 Hint:
-Don't reuse a already used `staging` branch.
-Delete it (or rename to keep) and create a new => `gcob staging` for each "new development"
+Don't reuse a already used branch (for example `next`).
+Delete it or rename to e.g. `keep` (`git branch -m new-branch-name`) 
+and then create a new one => `gcob next` for each "new/next development"
 
 After working in another branch
-`gcos` - switches to the `staging` branch\
+`gcos` - switches to the prevoius branch\
 `gco -`' - always switches back to your *previous branch*
 
 ## Starting with BDD

@@ -19,10 +19,12 @@ else
     printf "Found virtualenvwrapper.sh!\n"
 fi
 
-source $VENV_HOME/virtualenvwrapper.sh # set up for using virtualenvwrapper for virtual environments
+# source $VENV_HOME/virtualenvwrapper.sh # set up for using virtualenvwrapper for virtual environments
+echo 'HEI'
 
 if [ -e $HOME/bash-stuff/.bashrc-incl.sh ]; then
-    source $HOME/bash-stuff/.bashrc-incl.sh
+    echo 'skipping .bashrc-incl.sh'
+#     source $HOME/bash-stuff/.bashrc-incl.sh
 fi
 
 # "bash-stuff" for starting the virtual environment:
